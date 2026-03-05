@@ -15,7 +15,9 @@ class ActivityFactory extends Factory
     {
         return [
             'client_id' => Client::factory(),
-            'user_id' => null,
+            'user_id' => function (array $attributes) {
+                return Client::find($attributes['client_id'])->user_id;
+            },
             'title' => fake()->sentence(3),
             'status' => Activity::STATUS_PENDING,
             'date' => now()->toDateString(),

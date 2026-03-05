@@ -45,7 +45,7 @@ class User extends Authenticatable
         return $this->role === self::ROLE_USER;
     }
 
-    /*public function clients()
+    public function clients()
     {
         return $this->hasMany(Client::class);
     }
@@ -53,5 +53,5 @@ class User extends Authenticatable
     public function activities() 
     {   
         return $this->hasMany(Activity::class);
-    }*/
+    }
 }
