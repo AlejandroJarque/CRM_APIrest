@@ -17,4 +17,9 @@ class Activity extends Model
     self::STATUS_IN_PROGRESS,
     self::STATUS_DONE,
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }
