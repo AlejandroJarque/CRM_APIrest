@@ -1,17 +1,20 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\MeController;
+use App\Http\Controllers\Api\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\ActivityController;
 
 // Auth (public)
-Route::post('/login',fn() => response()->json(['message' => 'login endpoint'], 200));
-Route::post('/register', fn() => response()->json(['message' => 'register endpoint'], 200));
+Route::post('/login', LoginController::class);
+Route::post('/register', RegisterController::class);
 
 // Authenticated routes
 Route::middleware('auth:api')->group(function() {
 
-    Route::get('/me', fn() => response()->json(['message' => 'me endpoint'], 200));
+    Route::get('/me', MeController::class);
 
     // Profile
     Route::get('/profile', fn() => response()->json(['message' => 'profile endpoint'], 200));
