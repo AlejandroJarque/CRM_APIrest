@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('client_id')->constrained()->cascadeOnDelete();
             $table->string('title');
-            $table->enum('status', ['pneding', 'in progress', 'done']);
+            $table->string('status')->default('pending')->index();
             $table->date('date');
             $table->text('description')->nullable();
             $table->datetime('completed_at')->nullable();
