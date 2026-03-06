@@ -34,7 +34,7 @@ class ClientPolicy
     
     public function delete(User $user, Client $client): bool
     {
-        return $user->isAdmin() || $user->is === $client->user_id;
+        return $user->isAdmin() || $user->id === $client->user_id;
     }
 
     
