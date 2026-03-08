@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\ActivityController;
+use App\Http\Controllers\Api\V1\ContactController;
 
 // Auth (public)
 Route::post('/login', LoginController::class);
@@ -30,6 +31,9 @@ Route::middleware('auth:api')->group(function() {
 
     // Activities
     Route::apiResource('activities', ActivityController::class);
+
+    // Contacts
+    Route::apiResource('clients.contacts', ContactController::class);
 
     // Dashboard
     Route::get('/dashboard', fn() => response()->json(['message' => 'dashboard endpoint'], 200));
