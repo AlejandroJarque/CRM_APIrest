@@ -2,48 +2,70 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Application\Clients\ClientService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreClientRequest;
+use App\Http\Requests\UpdateClientRequest;
+use App\Http\Resources\V1\ClientResource;
+use App\Models\Client;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ClientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    
+    public function __construct(private ClientService $service)
+    {}
+
+    public function index(Request $request): AnonymousResourceCollection
     {
-        //
+        $clients = $this->service->listFor(
+            $request->user(),
+            $request->only(['name'])
+        );
+
+        return ClientResource::collection($clients);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreClientRequest $request): JsonResponse
     {
-        //
+        $client = $this->service->createFor(
+            $request->user(),
+            $request->validated()
+        );
+
+        return response()->json([
+            'data' => new ClientResource($client),
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Request $request, Client $client): JsonResponse
     {
-        //
+        $this->authorize('view', $client);
+
+        return response()->json([
+            'data' => new ClientResource($client),
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateClientRequest $request, Client $client): JsonResponse
     {
-        //
+        $this->authorize('update', $client);
+
+        $client = $this->service->update($client, $request->validated());
+
+        return response()->json([
+            'data' => new ClientResource($client),
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Request $request, Client $client): JsonResponse
     {
-        //
+        $this->authorize('delete', $client);
+
+        $this->service->delete($client);
+
+        return response()->json(null, 204);
     }
 }
