@@ -19,6 +19,7 @@ class UpdateActivityRequest extends FormRequest
         return [
             'title' => ['sometimes', 'string', 'min:1'],
             'status' => ['sometimes', 'in:' . implode(',', Activity::STATUSES)],
+            'contact_id' => ['nullable', 'exists:contacts,id'],
             'date' => ['sometimes', 'date'],
             'description' => ['nullable', 'string'],
         ];

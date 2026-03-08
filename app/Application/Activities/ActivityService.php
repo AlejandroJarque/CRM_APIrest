@@ -27,6 +27,7 @@ class ActivityService
         $activity = Activity::create([
             'client_id' => $client->id,
             'user_id' => $client->user_id,
+            'contact_id'  => $data['contact_id'] ?? null,
             'title' => $data['title'],
             'status' => $data['status'],
             'date' => $data['date'],

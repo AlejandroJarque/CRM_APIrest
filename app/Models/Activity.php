@@ -20,6 +20,7 @@ class Activity extends Model
 
     protected $fillable = [
         'client_id',
+        'contact_id',
         'user_id',
         'title',
         'status',
