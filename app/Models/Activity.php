@@ -18,8 +18,41 @@ class Activity extends Model
     self::STATUS_DONE,
     ];
 
+    protected $fillable = [
+        'client_id',
+        'user_id',
+        'title',
+        'status',
+        'date',
+        'description',
+        'completed_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+            'completed_at' => 'datetime',
+        ];
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === self::STATUS_PENDING;
+    }
+
+    public function isDone(): bool
+    {
+        return $this->status === self::STATUS_DONE;
     }
 }

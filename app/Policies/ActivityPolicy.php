@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Client;
 use App\Models\Activity;
 use App\Models\User;
 
@@ -16,25 +17,25 @@ class ActivityPolicy
     
     public function view(User $user, Activity $activity): bool
     {
-        return $user->isAdmin() || $user->id === $activity->client->user_id;
+        return $user->isAdmin() || $user->id === $activity->user_id;
     }
 
     
-    public function create(User $user, Activity $activity): bool
+    public function create(User $user, Client $client): bool
     {
-        return $user->isAdmin() || $user->id === $activity->client->user_id;
+        return $user->isAdmin() || $user->id === $client->user_id;
     }
 
     
     public function update(User $user, Activity $activity): bool
     {
-        return $user->isAdmin() || $user->id === $activity->client->user_id;
+        return $user->isAdmin() || $user->id === $activity->user_id;
     }
 
     
     public function delete(User $user, Activity $activity): bool
     {
-        return $user->isAdmin() || $user->id === $activity->client->user_id;
+        return $user->isAdmin() || $user->id === $activity->user_id;
     }
 
     
