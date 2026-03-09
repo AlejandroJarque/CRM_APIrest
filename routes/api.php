@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\UserController;
 
 // Auth (public)
 Route::post('/login', LoginController::class);
@@ -18,13 +21,13 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/me', MeController::class);
 
     // Profile
-    Route::get('/profile', fn() => response()->json(['message' => 'profile endpoint'], 200));
-    Route::patch('/profile', fn() => response()->json(['message' => 'profile update endpoint'], 200));
-    Route::patch('/profile/password', fn() => response()->json(['message' => 'profile password endpoint'], 200));
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::patch('/profile', [ProfileController::class, 'update']);
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword']);
 
     // Users (admin only)
-    Route::get('/users', fn() => response()->json(['message' => 'users index endpoint'], 200));
-    Route::get('/users/{id}', fn() => response()-> json(['message' => 'users show endpoint'], 200));
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{user}', [UserController::class, 'show']);
 
     // Clients
     Route::apiResource('clients', ClientController::class);
@@ -36,5 +39,5 @@ Route::middleware('auth:api')->group(function() {
     Route::apiResource('clients.contacts', ContactController::class);
 
     // Dashboard
-    Route::get('/dashboard', fn() => response()->json(['message' => 'dashboard endpoint'], 200));
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 });
