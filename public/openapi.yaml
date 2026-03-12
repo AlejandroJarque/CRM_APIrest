@@ -1,0 +1,1515 @@
+openapi: 3.0.3
+
+info:
+  title: CRM API
+  version: "1.0.0"
+  description: |
+    CRM REST API
+
+      This API provides access to a Customer Relationship Management (CRM) system designed to manage clients and their related activities in a structured and secure way. It exposes a set of RESTful endpoints that allow authenticated users to create, read, update, and delete domain resources while enforcing strict ownership and authorization rules.
+      The API is intended to be consumed by frontend applications and third-party services that require reliable access to CRM data, with a strong emphasis on consistency, clarity, and predictable behavior.
+      
+      Authorization
+
+       - All protected endpoints require authentication using a Bearer token.
+
+       - Authentication is mandatory for accessing any domain resource.
+
+       - Users with the admin role have global access and can view and manage all resources in the system.
+
+       - Users with the user role are restricted to accessing only the resources they own.
+
+       - When an authenticated user attempts to access a resource without sufficient permissions, the API responds with 403 Forbidden.
+
+      General Behavior
+
+      The API follows standard REST principles and uses conventional HTTP status codes to communicate the result of each request. All responses are returned in JSON format, including error responses, which are structured and consistent across the API to simplify client-side handling and debugging.
+      This documentation serves as the single source of truth for the API contract. The behavior described here is enforced by automated tests, and documentation must always remain aligned with the actual implementation.
+
+servers:
+  - url: /api
+
+tags:
+  - name: Authentication
+    description: Authentication and identity endpoints.
+  - name: Profile
+    description: Profile management endpoints.
+  - name: Users
+    description: User management endpoints.
+  - name: Clients
+    description: Client management endpoints.
+  - name: Contacts
+    description: Contact management endpoints.
+  - name: Activities
+    description: Activity management endpoints.
+  - name: Dashboard
+    description: Dashboard summary endpoint.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Role:
+      type: object
+      description: |
+        # Roles
+
+          Defines the authorization level of the user within the system.
+
+          Roles determine which actions a user is allowed to perform
+          and which API endpoints they can access.
+
+          Each role grants access to a specific set of API capabilities:
+
+          - user:
+            Can authenticate and access their own resources.
+            Can view their own user profile (/me).
+            Cannot list users or access other users' data.
+
+          - admin:
+            Has elevated privileges across the system.
+            Can list users and access any user profile.
+            Can access administrative and management endpoints.
+
+          Roles are assigned and managed internally by the system
+          and cannot be modified by regular users.
+      enum: [admin, user]
+
+    Rest principles:
+      type: object
+      description: |
+        # REST Principles and API Conventions
+
+          This API strictly follows REST principles. Deviations without explicit justification are not permitted.
+
+          ## Mandatory Rules
+          - The API is stateless (sessions are not used).
+
+          - JSON is the only accepted format for requests and responses.
+
+          - Resources are named in the plural.
+
+          - Examples: `/clients`, `/activities`, `/users`
+          - Correct use of HTTP verbs:
+
+          - GET: retrieve resources
+
+          - POST: create resources
+
+          - PATCH: partially update
+
+          - DELETE: delete resources
+
+          ## Design Conventions
+          - Each endpoint represents a resource, not an action.
+
+          - RPC-style endpoints (`/doSomething`, `/createClientNow`) are not allowed.
+
+          ## Justification
+          These rules ensure:
+          - Consistency across endpoints
+          - Ease of testing
+          - Better documentation (OpenAPI, Postman)
+          - Better integration with frontends and third parties
+
+          ## API Base Path and Versioning
+
+          All endpoints are exposed under the following base path:
+
+          /api
+
+          Any change that breaks backward compatibility requires a new version.
+
+          ## Allowed HTTP Status Codes
+
+          The API uses a limited and explicit set of HTTP status codes:
+
+          - 200 OK: Successful read or update
+          - 201 Created: Resource successfully created
+          - 204 No Content: Resource successfully deleted
+          - 401 Unauthorized: Request lacks valid authentication
+          - 403 Forbidden: Authenticated but not allowed to perform this action
+          - 404 Not Found: Resource does not exist or is not accessible
+          - 422 Unprocessable Entity: Validation errors
+
+          No other status codes are allowed unless explicitly justified.
+
+          ## Authorization Rules
+
+          The API distinguishes between two roles:
+
+          - user: can only access resources they own
+          - admin: has global access to all resources
+
+          Each endpoint must explicitly state which roles are allowed and how ownership is enforced.
+
+          ## Contract Authority
+
+          All HTTP contracts defined in this document are the source of truth.
+
+          Any endpoint that violates these principles is considered invalid.
+
+    Api versioning:
+      type: object
+      description: |
+        # API Versioning
+
+          ## Convention
+          All API routes are exposed under the path:
+
+          /api/...
+
+          Any change that breaks backward compatibility requires a new version.
+
+          ## Justification
+          - Avoids silent breaking changes.
+
+          - Allows for API evolution without breaking existing integrations.
+
+          - Almost no initial cost, high long-term value.
+
+          ## Discarded Alternatives
+          - Versioning by headers:
+
+          - Greater friction on the frontend.
+
+          - Less visibility in tools like Postman or Swagger.
+
+          ## Note
+          Currently, only `v1` exists, but the convention applies from the first endpoint.
+
+    Error handling:
+      type: object
+      description: |
+          # Error Handling and Status Codes
+
+          The API must respond consistently to errors.
+
+          ## Allowed Status Codes
+          - 200 OK
+          - 201 Created
+          - 400 Bad Request
+          - 401 Unauthorized
+          - 403 Forbidden
+          - 404 Not Found
+          - 422 Unprocessable Entity (validations)
+          - 500 Internal Server Error
+
+          ## Key Rule
+          Always returning `200` with a `success=false` flag is not allowed.
+
+          HTTP semantics must be respected.
+
+          ## Standard Error Structure
+          Errors must include:
+          - A clear message for the frontend
+          - Useful information for debugging (when applicable)
+          {
+            "message": "string",
+            "details": null | { "fields": { "field": ["error"] } }
+          }
+
+
+          ## Rationale
+          - Allows the frontend to handle errors deterministically.
+
+          - Facilitates automated testing.
+
+          - Improves observability and maintainability.
+    
+    Clients:
+      type: object
+      description: |
+        # Clients API Contract
+
+          ## Resource Description
+
+          The clients resource represents entities managed by a user within the CRM.
+          Each client belongs to a user and serves as the primary context for activities and contacts.
+
+          Clients are exposed as a top-level resource.
+          Ownership and access control are enforced via authorization rules.
+
+          ## Endpoints
+
+          ### GET /api/clients
+
+          **Purpose**
+          List all clients accessible to the authenticated user.
+
+          **Authorization**
+          - user: only their own clients
+          - admin: all clients
+
+          **Status Codes**
+          - 200 OK
+          - 401 Unauthorized
+
+          ### POST /api/clients
+
+          **Purpose**
+          Create a new client owned by the authenticated user.
+
+          **Authorization**
+          - user: client is automatically assigned to the authenticated user
+          - admin: same behavior
+
+          **Status Codes**
+          - 201 Created
+          - 401 Unauthorized
+          - 422 Unprocessable Entity
+
+          ### GET /api/clients/{id}
+
+          **Purpose**
+          Retrieve a single client by id.
+
+          **Authorization**
+          - user: only their own clients
+          - admin: any client
+
+          **Status Codes**
+          - 200 OK
+          - 401 Unauthorized
+          - 403 Forbidden
+          - 404 Not Found
+
+          ### PATCH /api/clients/{id}
+
+          **Purpose**
+          Partially update a client.
+
+          **Authorization**
+          - user: only their own clients
+          - admin: any client
+
+          **Status Codes**
+          - 200 OK
+          - 401 Unauthorized
+          - 403 Forbidden
+          - 404 Not Found
+          - 422 Unprocessable Entity
+
+          ### DELETE /api/clients/{id}
+
+          **Purpose**
+          Delete a client.
+
+          **Authorization**
+          - user: only their own clients
+          - admin: any client
+
+          **Status Codes**
+          - 204 No Content
+          - 401 Unauthorized
+          - 403 Forbidden
+          - 404 Not Found
+
+    Activities:
+      type: object
+      description: |
+        # Activities API Contract
+
+          ## Resource Description
+
+          The activities resource represents actions or events performed in the context of a client.
+          Each activity belongs to a client, and indirectly to a user through that client.
+
+          Activities are exposed as a top-level resource.
+          Ownership and access control are enforced via authorization rules, not URL nesting.
+
+          ## Endpoints
+
+          ### GET /api/activities
+
+          **Purpose**
+          List all activities accessible to the authenticated user.
+
+          **Authorization**
+          - user: only activities belonging to the user's own clients
+          - admin: all activities
+
+          **Status Codes**
+          - 200 OK
+          - 401 Unauthorized
+
+          ### POST /api/activities
+
+          **Purpose**
+          Create a new activity.
+
+          **Authorization**
+          - user: only for their own clients
+          - admin: for any client
+
+          **Status Codes**
+          - 201 Created
+          - 401 Unauthorized
+          - 403 Forbidden
+          - 422 Unprocessable Entity
+
+    Contacts:
+      type: object
+      description: |
+        # Contacts API Contract
+
+          ## Resource Description
+
+          The contacts resource represents people associated with a client.
+          Each contact belongs to a client, and indirectly to a user through that client.
+
+          Contacts are exposed as a nested resource under clients.
+          Ownership and access control are enforced via the parent client's authorization rules.
+
+          ## Endpoints
+
+          ### GET /api/clients/{clientId}/contacts
+
+          **Purpose**
+          List all contacts of a client.
+
+          **Authorization**
+          - user: only contacts of their own clients
+          - admin: all contacts
+
+          **Status Codes**
+          - 200 OK
+          - 401 Unauthorized
+          - 403 Forbidden
+
+          ### POST /api/clients/{clientId}/contacts
+
+          **Purpose**
+          Create a new contact for a client.
+
+          **Authorization**
+          - user: only for their own clients
+          - admin: for any client
+
+          **Status Codes**
+          - 201 Created
+          - 401 Unauthorized
+          - 403 Forbidden
+          - 422 Unprocessable Entity
+
+    Dashboard Response:
+      type: object
+      description: |
+          # Dashboard API
+
+            ## Overview
+
+            The Dashboard API provides an aggregated, read-only view of key metrics and alerts for the authenticated user. It is designed to be lightweight, fast, and aligned with existing authorization rules. The dashboard does not represent a persistent entity and has no CRUD operations.
+
+            ## Purpose
+
+            * Provide a single endpoint for frontend dashboards
+            * Reduce round-trips by aggregating counters and alerts
+            * Respect ownership and role-based access (user vs admin)
+            * Avoid introducing new domain entities or persistence
+
+            ## Endpoint
+
+            GET /api/dashboard
+
+            ## Authentication
+
+            * Required: Bearer token (OAuth2 via Passport)
+            * Unauthorized requests return `401`
+
+            ## Authorization Rules
+
+            ### User
+
+            * `clients_count`: number of clients owned by the user
+            * `activities_count`: number of activities associated with the user's clients
+            * `pending_activities_alerts`: pending activities associated with the user's clients
+
+            ### Admin
+
+            * `clients_count`: total number of clients
+            * `activities_count`: total number of activities
+            * `pending_activities_alerts`: all pending activities
+
+            ## Definition of "Pending Activity"
+
+            An activity is considered **pending** when:
+
+            * `completed_at` is `NULL`
+
+            This rule is explicit, testable, and intentionally simple.
+
+            ## Response Format
+
+            {
+              "clients_count": 5,
+              "activities_count": 12,
+              "pending_activities_alerts": [
+                {
+                  "activity_id": 42
+                }
+              ]
+            }
+
+      properties:
+        clients_count:
+          type: integer
+          description: Number of clients visible to the authenticated user
+          example: 5
+        activities_count:
+          type: integer
+          description: Number of activities visible to the authenticated user
+          example: 12
+        pending_activities_alerts:
+          type: array
+          description: List of pending activity alerts
+          items:
+            $ref: '#/components/schemas/PendingActivityAlert'
+
+    PendingActivityAlert:
+      type: object
+      required:
+        - activity_id
+      properties:
+        activity_id:
+          type: integer
+          description: Identifier of the pending activity
+          example: 42
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+        token_type:
+          type: string
+          example: "Bearer"
+
+    MeResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id: { type: integer, example: 1 }
+            name: { type: string, example: "Alejandro Jarque" }
+            email: { type: string, format: email, example: "alejandro@example.com" }
+            role: { type: string, enum: [user, admin], example: user }
+
+    User:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        name: { type: string, example: "Alejandro Jarque" }
+        email: { type: string, format: email, example: "alejandro@example.com" }
+        role: { type: string, enum: [user, admin], example: user }
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "This action is unauthorized."
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "The email field is required."
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email: ["The email field is required."]
+
+    ClientResource:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id: { type: integer, example: 1 }
+            name: { type: string, example: "Empresa Test" }
+            email: { type: string, format: email, example: "empresa@test.com" }
+            phone: { type: string, example: "666111222" }
+            address: { type: string, example: "Calle Mayor 1, Valencia" }
+            user_id: { type: integer, example: 1 }
+
+    ClientCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer, example: 1 }
+              name: { type: string, example: "Empresa Test" }
+              email: { type: string, format: email, example: "empresa@test.com" }
+              phone: { type: string, example: "666111222" }
+              address: { type: string, example: "Calle Mayor 1, Valencia" }
+              user_id: { type: integer, example: 1 }
+
+    ClientCreateRequest:
+      type: object
+      required: [name, email]
+      properties:
+        name: { type: string, example: "Empresa Test" }
+        email: { type: string, format: email, example: "empresa@test.com" }
+        phone: { type: string, example: "666111222" }
+        address: { type: string, example: "Calle Mayor 1, Valencia" }
+
+    ClientUpdateRequest:
+      type: object
+      properties:
+        name: { type: string, example: "Empresa Actualizada" }
+        email: { type: string, format: email, example: "empresa@test.com" }
+        phone: { type: string, example: "666111222" }
+        address: { type: string, example: "Calle Mayor 1, Valencia" }
+
+    ContactResource:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id: { type: integer, example: 1 }
+            name: { type: string, example: "Juan García" }
+            email: { type: string, format: email, example: "juan@acme.com" }
+            phone: { type: string, example: "123456789" }
+            position: { type: string, example: "Director de compras" }
+            client_id: { type: integer, example: 1 }
+
+    ContactCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer, example: 1 }
+              name: { type: string, example: "Juan García" }
+              email: { type: string, format: email, example: "juan@acme.com" }
+              phone: { type: string, example: "123456789" }
+              position: { type: string, example: "Director de compras" }
+              client_id: { type: integer, example: 1 }
+
+    ContactCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, example: "Juan García" }
+        email: { type: string, format: email, example: "juan@acme.com" }
+        phone: { type: string, example: "123456789" }
+        position: { type: string, example: "Director de compras" }
+
+    ContactUpdateRequest:
+      type: object
+      properties:
+        name: { type: string, example: "Juan García Actualizado" }
+        email: { type: string, format: email, example: "juan@acme.com" }
+        phone: { type: string, example: "123456789" }
+        position: { type: string, example: "Director de compras" }
+
+    ActivityResource:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id: { type: integer, example: 1 }
+            title: { type: string, example: "Llamada de seguimiento" }
+            status: { type: string, enum: [pending, in_progress, done], example: pending }
+            date: { type: string, format: date, example: "2026-03-15" }
+            description: { type: string, example: "Llamar al cliente para seguimiento" }
+            completed_at: { type: string, format: date-time, nullable: true, example: null }
+            client_id: { type: integer, example: 1 }
+            user_id: { type: integer, example: 1 }
+
+    ActivityCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer, example: 1 }
+              title: { type: string, example: "Llamada de seguimiento" }
+              status: { type: string, enum: [pending, in_progress, done], example: pending }
+              date: { type: string, format: date, example: "2026-03-15" }
+              description: { type: string, example: "Llamar al cliente para seguimiento" }
+              completed_at: { type: string, format: date-time, nullable: true, example: null }
+              client_id: { type: integer, example: 1 }
+              user_id: { type: integer, example: 1 }
+
+    ActivityCreateRequest:
+      type: object
+      required: [title, status, date, client_id]
+      properties:
+        title: { type: string, example: "Llamada de seguimiento" }
+        status: { type: string, enum: [pending, in_progress, done], example: pending }
+        date: { type: string, format: date, example: "2026-03-15" }
+        description: { type: string, example: "Llamar al cliente para seguimiento" }
+        client_id: { type: integer, example: 1 }
+
+    ActivityUpdateRequest:
+      type: object
+      properties:
+        title: { type: string, example: "Llamada actualizada" }
+        status: { type: string, enum: [pending, in_progress, done], example: done }
+        date: { type: string, format: date, example: "2026-03-15" }
+        description: { type: string, example: "Descripción actualizada" }
+
+security:
+  - BearerAuth: []
+
+paths:
+  /login:
+    post:
+      summary: User login
+      tags: [Authentication]
+      description: Authenticates a user and returns an access token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: password
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "422":
+          description: Invalid credentials (validation error)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /register:
+    post:
+      summary: User register
+      tags: [Authentication]
+      description: Creates a new user identity with role `user`. Does not return a token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                  example: "Alejandro Jarque"
+                email:
+                  type: string
+                  format: email
+                  example: new.user@example.com
+                password:
+                  type: string
+                  example: Password123
+                password_confirmation:
+                  type: string
+                  example: Password123
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id: { type: integer, example: 1 }
+                      name: { type: string, example: "Alejandro Jarque" }
+                      email: { type: string, format: email, example: "new.user@example.com" }
+                      role: { type: string, enum: [user, admin], example: user }
+                      created_at: { type: string, format: date-time }
+                      updated_at: { type: string, format: date-time }
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /me:
+    get:
+      summary: Health/auth check
+      tags: [Authentication]
+      description: "Returns the authenticated user's data."
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /profile:
+    get:
+      summary: Get profile
+      tags: [Profile]
+      responses:
+        "200":
+          description: Profile data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Update profile
+      tags: [Profile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string, example: "Alejandro Jarque Updated" }
+                email: { type: string, format: email, example: "alejandro@example.com" }
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MeResponse"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /profile/password:
+    patch:
+      summary: Update password
+      tags: [Profile]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, password, password_confirmation]
+              properties:
+                current_password: { type: string, example: password123 }
+                password: { type: string, example: newpassword123 }
+                password_confirmation: { type: string, example: newpassword123 }
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string, example: "Password updated successfully." }
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /users:
+    get:
+      summary: List users (admin only)
+      tags: [Users]
+      description: Returns a list of users. Accessible only by ADMIN role.
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /users/{id}:
+    get:
+      summary: Get user by id (admin only)
+      tags: [Users]
+      description: Returns a specific user by id. Accessible only by ADMIN role.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /clients:
+    get:
+      summary: List clients
+      tags: [Clients]
+      description: Returns clients visible to the authenticated user.
+      responses:
+        "200":
+          description: Clients list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientCollection"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create client
+      tags: [Clients]
+      description: Creates a new client owned by the authenticated user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientCreateRequest"
+      responses:
+        "201":
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /clients/{id}:
+    get:
+      summary: Get client
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Update client
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientUpdateRequest"
+      responses:
+        "200":
+          description: Client updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClientResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+    delete:
+      summary: Delete client
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "204":
+          description: Client deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /clients/{clientId}/contacts:
+    get:
+      summary: List contacts
+      tags: [Contacts]
+      description: Returns contacts of a client visible to the authenticated user.
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Contacts list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactCollection"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create contact
+      tags: [Contacts]
+      description: Creates a new contact for a client.
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactCreateRequest"
+      responses:
+        "201":
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /clients/{clientId}/contacts/{id}:
+    get:
+      summary: Get contact
+      tags: [Contacts]
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Contact found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Update contact
+      tags: [Contacts]
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactUpdateRequest"
+      responses:
+        "200":
+          description: Contact updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+    delete:
+      summary: Delete contact
+      tags: [Contacts]
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "204":
+          description: Contact deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /activities:
+    get:
+      summary: List activities
+      tags: [Activities]
+      description: Returns activities visible to the authenticated user.
+      responses:
+        "200":
+          description: Activities list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityCollection"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create activity
+      tags: [Activities]
+      description: Creates a new activity for a client.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityCreateRequest"
+      responses:
+        "201":
+          description: Activity created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /activities/{id}:
+    get:
+      summary: Get activity
+      tags: [Activities]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Activity found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    patch:
+      summary: Update activity
+      tags: [Activities]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityUpdateRequest"
+      responses:
+        "200":
+          description: Activity updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+    delete:
+      summary: Delete activity
+      tags: [Activities]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "204":
+          description: Activity deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /dashboard:
+    get:
+      summary: Aggregated dashboard
+      description: >
+        Returns aggregated counters and pending activity alerts according to the
+        authenticated user's role. This is a read-only endpoint.
+      tags: [Dashboard]
+      responses:
+        "200":
+          description: Dashboard loaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clients_count
+                  - activities_count
+                  - pending_activities_alerts
+                properties:
+                  clients_count:
+                    type: integer
+                    description: Number of clients visible to the authenticated user
+                    example: 5
+                  activities_count:
+                    type: integer
+                    description: Number of activities visible to the authenticated user
+                    example: 12
+                  pending_activities_alerts:
+                    type: array
+                    description: List of pending activity alerts
+                    items:
+                      type: object
+                      required:
+                        - activity_id
+                      properties:
+                        activity_id:
+                          type: integer
+                          description: Identifier of the pending activity
+                          example: 42
+        "401":
+          description: Unauthorized - authentication token is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"

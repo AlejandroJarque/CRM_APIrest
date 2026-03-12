@@ -1,66 +1,230 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CRM REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Description
 
-## About Laravel
+This repository contains a RESTful CRM (Customer Relationship Management) API built with Laravel. The main purpose of the project is to provide a backend service that allows companies to manage their clients and the activities associated with them, while supporting secure user authentication and authorization.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The API is designed to be stateless, JSON-based, and easily consumable by web or mobile frontends. Each authenticated user can manage their own data, ensuring separation and security between company employees.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Overview
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The project is implemented as a Laravel application following REST and clean architecture principles. Instead of traditional server-rendered views, all interactions are performed through HTTP endpoints that return JSON responses.
 
-## Learning Laravel
+Key goals of the project:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* Centralize client information for a company
+* Track activities related to each client
+* Provide secure authentication for users
+* Expose a clear and versioned REST API
+* Maintain a clean, scalable, and testable codebase
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Architecture
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+The application is structured around a layered architecture inspired by Domain-Driven Design (DDD):
 
-## Laravel Sponsors
+### Controllers (HTTP Layer)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+* Handle incoming HTTP requests
+* Validate request intent and format
+* Delegate business logic to the Application layer
+* Return standardized JSON responses
 
-### Premium Partners
+### Application Layer
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+* Contains use cases and services
+* Coordinates domain logic
+* Acts as an intermediary between Controllers and Domain logic
 
-## Contributing
+### Domain Layer
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* Represents the core business logic
+* Contains domain events and entities
+* Is independent of framework-specific details
 
-## Code of Conduct
+### Infrastructure
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+* Database access via Eloquent ORM
+* Authentication and authorization mechanisms
+* Configuration and environment setup
 
-## Security Vulnerabilities
+## Authentication
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Authentication is handled using token-based security suitable for REST APIs.
 
-## License
+* OAuth2-based authentication using Laravel Passport
+* Users authenticate via a login endpoint
+* A valid access token is required to access protected endpoints
+* Tokens are sent using the `Authorization: Bearer <token>` header
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This approach ensures the API remains stateless and secure.
+
+## Database Design
+
+The database is intentionally simple and normalized. It consists of the following main entities:
+
+* **Users**: Application users who authenticate and perform actions
+* **Clients**: Customers managed by users
+* **Activities**: Actions or events associated with a client
+
+Relationships:
+
+* A User can have many Clients
+* A Client belongs to a User
+* A Client can have many Activities
+* An Activity belongs to both a Client and a User
+
+Migrations and seeders are provided to simplify setup and local development.
+
+## API Versioning
+
+The API is versioned to ensure backward compatibility:
+
+* Base path: `/api/v1`
+
+All current endpoints are grouped under version 1, allowing future versions to coexist without breaking existing integrations.
+
+## Mailing and Events
+
+The project includes support for domain events and notifications:
+
+* Domain events are triggered on relevant actions (e.g. client creation, activity registration)
+* The structure allows easy extension for email notifications or asynchronous processing
+* The system is ready to be integrated with external mailing services if required
+
+## Technologies Used
+
+* Laravel
+* PHP
+* Composer
+* Laravel Passport
+* MySQL / MariaDB
+* RESTful API principles
+* JSON
+* Git & GitHub
+* Visual Studio Code
+
+## Installation
+
+### Prerequisites
+
+* PHP >= 8.x
+* Composer
+* Node.js & npm
+* MySQL or compatible database
+
+### Steps
+
+1. Clone the repository
+
+   ```bash
+   git clone <repository-url>
+   ```
+
+2. Install PHP dependencies
+
+   ```bash
+   composer install
+   ```
+
+3. Copy environment configuration
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Generate application key
+
+   ```bash
+   php artisan key:generate
+   ```
+
+5. Configure database credentials in `.env`
+
+6. Run migrations and seeders
+
+   ```bash
+   php artisan migrate --seed
+   ```
+
+7. Install Passport
+
+   ```bash
+   php artisan passport:install
+   ```
+Important: Authentication Setup
+
+This project uses Laravel Passport for OAuth2 authentication.
+After running `php artisan passport:install`, the following files must exist:
+
+- storage/oauth-private.key
+- storage/oauth-public.key
+
+If these files are missing, authentication-related endpoints will return HTTP 500 errors.
+
+
+8. Personal Access Client required 
+
+   ```bash
+   php artisan passport:client --personal
+   ```
+
+
+9. Start the development server 
+
+   ```bash
+   php artisan serve
+   ```
+
+### Environment Configuration (.env)
+
+This project relies on environment-specific configuration. After copying
+.env.example to .env, the following variables must be properly configured.
+
+Application
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=crm
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
+Frontend (CORS)
+FRONTEND_URL=http://localhost:5173
+
+## Project Structure
+
+```
+app/
+ ├── Application/
+ │   ├── Activities/
+ │   └── Clients/
+ ├── Domain/
+ │   └── Events/
+ ├── Http/
+ │   └── Controllers/
+ │       └── Api/
+ │           └── V1/
+ └── Models/
+
+database/
+ ├── migrations/
+ └── seeders/
+
+routes/
+ └── api.php
+```
+
+## Development Notes
+
+* Controllers are kept thin and focused on HTTP concerns
+* Business logic is encapsulated in service classes
+* Domain events decouple side effects from core logic
+* The codebase follows Laravel and REST best practices
+* The project is designed to be easily extendable
+
+
