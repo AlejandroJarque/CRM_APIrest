@@ -64,12 +64,15 @@ The database is intentionally simple and normalized. It consists of the followin
 
 * **Users**: Application users who authenticate and perform actions
 * **Clients**: Customers managed by users
+* **Contacts**: People associated with a client
 * **Activities**: Actions or events associated with a client
 
 Relationships:
 
 * A User can have many Clients
 * A Client belongs to a User
+* A Client can have many Contacts
+* A Contact belongs to a Client
 * A Client can have many Activities
 * An Activity belongs to both a Client and a User
 
@@ -77,11 +80,20 @@ Migrations and seeders are provided to simplify setup and local development.
 
 ## API Versioning
 
-The API is versioned to ensure backward compatibility:
+All current endpoints are grouped under the base path:
 
-* Base path: `/api/v1`
+* Base path: `/api`
 
-All current endpoints are grouped under version 1, allowing future versions to coexist without breaking existing integrations.
+Any change that breaks backward compatibility requires a new version.
+
+## API Documentation
+
+Swagger UI is available at:
+```
+http://localhost:8080/swagger/index.html
+```
+
+The OpenAPI specification is located at `public/openapi.yaml`.
 
 ## Mailing and Events
 
@@ -93,87 +105,89 @@ The project includes support for domain events and notifications:
 
 ## Technologies Used
 
-* Laravel
-* PHP
+* Laravel 12
+* PHP 8.2
 * Composer
 * Laravel Passport
-* MySQL / MariaDB
+* MySQL 8.0
+* Docker + Nginx
 * RESTful API principles
 * JSON
+* OpenAPI 3.0 (Swagger UI)
+* PHPUnit (TDD)
 * Git & GitHub
 * Visual Studio Code
 
 ## Installation
 
-### Prerequisites
-
-* PHP >= 8.x
-* Composer
-* Node.js & npm
-* MySQL or compatible database
-
-### Steps
+### With Docker (recommended)
 
 1. Clone the repository
-
-   ```bash
+```bash
    git clone <repository-url>
-   ```
+   cd crm-apirest
+```
+
+2. Copy environment file
+```bash
+   cp .env.docker .env
+```
+
+3. Start containers
+```bash
+   docker compose up -d
+```
+
+4. Run migrations and seeders
+```bash
+   docker exec crm_app php artisan migrate --seed
+```
+
+5. Create Passport personal access client
+```bash
+   docker exec crm_app php artisan passport:client --personal --no-interaction
+```
+
+API available at: `http://localhost:8080`
+
+### Without Docker
+
+1. Clone the repository
+```bash
+   git clone <repository-url>
+```
 
 2. Install PHP dependencies
-
-   ```bash
+```bash
    composer install
-   ```
+```
 
 3. Copy environment configuration
-
-   ```bash
+```bash
    cp .env.example .env
-   ```
+```
 
 4. Generate application key
-
-   ```bash
+```bash
    php artisan key:generate
-   ```
+```
 
 5. Configure database credentials in `.env`
 
 6. Run migrations and seeders
-
-   ```bash
+```bash
    php artisan migrate --seed
-   ```
+```
 
-7. Install Passport
+7. Create Passport personal access client
+```bash
+   php artisan passport:client --personal --no-interaction
+```
 
-   ```bash
-   php artisan passport:install
-   ```
-Important: Authentication Setup
-
-This project uses Laravel Passport for OAuth2 authentication.
-After running `php artisan passport:install`, the following files must exist:
-
-- storage/oauth-private.key
-- storage/oauth-public.key
-
-If these files are missing, authentication-related endpoints will return HTTP 500 errors.
-
-
-8. Personal Access Client required 
-
-   ```bash
-   php artisan passport:client --personal
-   ```
-
-
-9. Start the development server 
-
-   ```bash
+8. Start the development server
+```bash
    php artisan serve
-   ```
+```
 
 ### Environment Configuration (.env)
 
@@ -197,17 +211,19 @@ Frontend (CORS)
 FRONTEND_URL=http://localhost:5173
 
 ## Project Structure
-
 ```
 app/
  ├── Application/
  │   ├── Activities/
- │   └── Clients/
+ │   ├── Clients/
+ │   ├── Contacts/
+ │   └── Dashboard/
  ├── Domain/
  │   └── Events/
  ├── Http/
  │   └── Controllers/
  │       └── Api/
+ │           ├── Auth/
  │           └── V1/
  └── Models/
 
@@ -215,8 +231,18 @@ database/
  ├── migrations/
  └── seeders/
 
+public/
+ ├── openapi.yaml
+ └── swagger/
+     └── index.html
+
 routes/
  └── api.php
+```
+
+## Running Tests
+```bash
+docker exec crm_app php artisan test
 ```
 
 ## Development Notes
