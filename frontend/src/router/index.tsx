@@ -6,6 +6,9 @@ import ClientsPage from '../pages/clients/ClientsPage'
 import ClientCreatePage from '../pages/clients/ClientCreatePage'
 import ClientEditPage from '../pages/clients/ClientEditPage'
 import ClientDetailPage from '../pages/clients/ClientDetailPage'
+import ContactsPage from '../pages/contacts/ContactsPage'
+import ContactCreatePage from '../pages/contacts/ContactCreatePage'
+import ContactEditPage from '../pages/contacts/ContactEditPage'
 import ProtectedRoute from './ProtectedRoute'
 
 function Router() {
@@ -51,6 +54,30 @@ function Router() {
           element={
             <ProtectedRoute>
               <ClientDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:clientId/contacts"
+          element={
+            <ProtectedRoute>
+              <ContactsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:clientId/contacts/create"
+          element={
+            <ProtectedRoute>
+              <ContactCreatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/clients/:clientId/contacts/:id/edit"
+          element={
+            <ProtectedRoute>
+              <ContactEditPage />
             </ProtectedRoute>
           }
         />
