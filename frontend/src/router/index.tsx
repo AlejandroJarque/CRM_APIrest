@@ -13,6 +13,7 @@ import ActivitiesPage from '../pages/activities/ActivitiesPage'
 import ActivityCreatePage from '../pages/activities/ActivityCreatePage'
 import ActivityEditPage from '../pages/activities/ActivityEditPage'
 import ActivityDetailPage from '../pages/activities/ActivityDetailPage'
+import ProfilePage from '../pages/profile/ProfilePage'
 import ProtectedRoute from './ProtectedRoute'
 
 function Router() {
@@ -110,13 +111,21 @@ function Router() {
           }
         />
         <Route
-        path="/activities/:id"
-        element={
-          <ProtectedRoute>
-            <ActivityDetailPage />
-          </ProtectedRoute>
-        }
-      />
+          path="/activities/:id"
+          element={
+            <ProtectedRoute>
+              <ActivityDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </BrowserRouter>
