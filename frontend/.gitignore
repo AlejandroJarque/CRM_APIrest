@@ -7,10 +7,6 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-/vendor
-/public/hot
-/public/storage
-/storage/*.key
 node_modules
 dist
 dist-ssr
