@@ -9,6 +9,10 @@ import ClientDetailPage from '../pages/clients/ClientDetailPage'
 import ContactsPage from '../pages/contacts/ContactsPage'
 import ContactCreatePage from '../pages/contacts/ContactCreatePage'
 import ContactEditPage from '../pages/contacts/ContactEditPage'
+import ActivitiesPage from '../pages/activities/ActivitiesPage'
+import ActivityCreatePage from '../pages/activities/ActivityCreatePage'
+import ActivityEditPage from '../pages/activities/ActivityEditPage'
+import ActivityDetailPage from '../pages/activities/ActivityDetailPage'
 import ProtectedRoute from './ProtectedRoute'
 
 function Router() {
@@ -81,6 +85,38 @@ function Router() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/activities"
+          element={
+            <ProtectedRoute>
+              <ActivitiesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/activities/create"
+          element={
+            <ProtectedRoute>
+              <ActivityCreatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/activities/:id/edit"
+          element={
+            <ProtectedRoute>
+              <ActivityEditPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+        path="/activities/:id"
+        element={
+          <ProtectedRoute>
+            <ActivityDetailPage />
+          </ProtectedRoute>
+        }
+      />
         <Route path="*" element={<h1>404</h1>} />
       </Routes>
     </BrowserRouter>
