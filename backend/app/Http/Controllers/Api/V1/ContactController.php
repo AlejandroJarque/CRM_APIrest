@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\UpdateContactRequest;
 use App\Http\Resources\V1\ContactResource;
+use Illuminate\Http\Request;
 use App\Models\Client;
 use App\Models\Contact;
 use Illuminate\Http\JsonResponse;
@@ -16,6 +17,13 @@ class ContactController extends Controller
 {
     public function __construct(private ContactService $service)
     {}
+
+    public function indexGlobal(Request $request): AnonymousResourceCollection
+    {
+        $contacts = $this->service->listForUser($request->user());
+
+        return ContactResource::collection($contacts);
+    }
 
     public function index(Client $client): AnonymousResourceCollection
     {
