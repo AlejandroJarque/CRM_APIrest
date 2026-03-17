@@ -1,7 +1,7 @@
 import apiClient from './client'
 
-export async function getActivities() {
-  const response = await apiClient.get('/activities')
+export async function getActivities(page = 1) {
+  const response = await apiClient.get('/activities', { params: { page } })
   return response.data
 }
 

@@ -118,6 +118,11 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
             {theme === 'dark' ? 'Light mode' : 'Dark mode'}
           </button>
 
+          <button className="theme-toggle" onClick={() => { logout(); navigate('/login') }}>
+            <span className="nav-icon"><IconLogout /></span>
+            Sign out
+          </button>
+
           <div className="user-pill" onClick={() => navigate('/profile')}>
             <div className="avatar">
               {user ? getInitials(user.name) : '?'}
@@ -218,6 +223,16 @@ function IconMoon() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
       <path d="M12 8.5A5.5 5.5 0 015.5 2a5.5 5.5 0 100 10A5.5 5.5 0 0012 8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconLogout() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M5 2H2.5A1.5 1.5 0 001 3.5v7A1.5 1.5 0 002.5 12H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+      <path d="M9 10l3-3-3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12 7H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   )
 }

@@ -7,9 +7,9 @@ export default function NotFoundPage() {
   return (
     <div className="not-found">
       <span className="not-found__code">404</span>
-      <span className="not-found__message">Esta página no existe</span>
+      <span className="not-found__message">This page doesn't exist</span>
       <button className="btn btn-ghost" onClick={() => navigate('/dashboard')}>
-        Volver al dashboard
+        Back to dashboard
       </button>
     </div>
   )

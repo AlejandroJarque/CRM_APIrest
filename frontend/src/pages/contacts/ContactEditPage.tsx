@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getContact, updateContact } from '../../api/contacts'
+import '../clients/ClientCreatePage.css'
 
 function ContactEditPage() {
   const [name, setName] = useState('')
@@ -39,46 +40,79 @@ function ContactEditPage() {
     }
   }
 
-  if (loading) return <p>Cargando...</p>
-  if (error) return <p>{error}</p>
+  if (loading) return <div className="loading">Cargando...</div>
+  if (error) return <div className="error-msg">{error}</div>
 
   return (
-    <div>
-      <h1>Editar contacto</h1>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nombre</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+    <div className="page">
+      <div className="page-header">
+        <div className="page-title-group">
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => navigate(`/clients/${clientId}/contacts`)}
+          >
+            ← Back
+          </button>
+          <h1 className="page-title">Edit contact</h1>
         </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Teléfono</label>
-          <input
-            type="text"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Guardando...' : 'Guardar cambios'}
-        </button>
-        <button type="button" onClick={() => navigate(`/clients/${clientId}/contacts`)}>
-          Cancelar
-        </button>
-      </form>
+      </div>
+
+      <div className="form-body">
+        {error && <div className="auth-error">{error}</div>}
+
+        <form className="form-card" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label className="input-label">Name</label>
+            <input
+              className="input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nombre del contacto"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Email</label>
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="email@ejemplo.com"
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Phone</label>
+            <input
+              className="input"
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+34 600 000 000"
+            />
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => navigate(`/clients/${clientId}/contacts`)}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={loading}
+            >
+              {loading ? 'Guardando...' : 'Guardar cambios'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
