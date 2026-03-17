@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getContacts, deleteContact } from '../../api/contacts'
+import '../clients/ClientsPage.css'
 
 interface Contact {
   id: number
@@ -35,45 +36,79 @@ function ContactsPage() {
     }
   }
 
-  if (loading) return <p>Cargando...</p>
-  if (error) return <p>{error}</p>
+  if (loading) return <div className="loading">Loading...</div>
+  if (error) return <div className="error-msg">{error}</div>
 
   return (
-    <div>
-      <h1>Contactos</h1>
-      <button onClick={() => navigate(`/clients/${clientId}/contacts/create`)}>
-        Nuevo contacto
-      </button>
-      <button onClick={() => navigate(`/clients/${clientId}`)}>
-        Volver al cliente
-      </button>
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {contacts.map((contact) => (
-            <tr key={contact.id}>
-              <td>{contact.name}</td>
-              <td>{contact.email}</td>
-              <td>{contact.phone}</td>
-              <td>
-                <button onClick={() => navigate(`/clients/${clientId}/contacts/${contact.id}/edit`)}>
-                  Editar
-                </button>
-                <button onClick={() => handleDelete(contact.id)}>
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="page">
+      <div className="page-header">
+        <div className="page-title-group">
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => navigate(`/clients/${clientId}`)}
+          >
+            ← Back
+          </button>
+          <h1 className="page-title">Contactos</h1>
+          <span className="count-pill">{contacts.length}</span>
+        </div>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate(`/clients/${clientId}/contacts/create`)}
+        >
+          New contact
+        </button>
+      </div>
+
+      {contacts.length === 0 ? (
+        <div className="empty-state">
+          <span>No contacts for this client</span>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate(`/clients/${clientId}/contacts/create`)}
+          >
+            Create first contact
+          </button>
+        </div>
+      ) : (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts.map((contact) => (
+                <tr key={contact.id}>
+                  <td className="td-name">{contact.name}</td>
+                  <td className="td-secondary">{contact.email}</td>
+                  <td className="td-secondary">{contact.phone}</td>
+                  <td>
+                    <div className="row-actions">
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => navigate(`/clients/${clientId}/contacts/${contact.id}/edit`)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleDelete(contact.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }

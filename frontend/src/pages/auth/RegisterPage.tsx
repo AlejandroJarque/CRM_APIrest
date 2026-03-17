@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { register as registerApi } from '../../api/auth'
+import '../auth/LoginPage.css'
 
 function RegisterPage() {
   const [name, setName] = useState('')
@@ -13,65 +14,119 @@ function RegisterPage() {
   const navigate = useNavigate()
 
   async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault()
-  setError(null)
-  setLoading(true)
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
 
-  try {
-    await registerApi(name, email, password, passwordConfirmation)
-    navigate('/login')
-  } catch {
-    setError('Error al registrar el usuario')
-  } finally {
-    setLoading(false)
+    try {
+      await registerApi(name, email, password, passwordConfirmation)
+      navigate('/login')
+    } catch {
+      setError('Error al registrar el usuario')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   return (
-    <div>
-      <h1>Register</h1>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nombre</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+    <div className="auth-page">
+      <div className="auth-card">
+
+        <div className="auth-logo">
+          <div className="logo-mark">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <text
+                x="7.5" y="12"
+                textAnchor="middle"
+                fontFamily="Inter, -apple-system, sans-serif"
+                fontWeight="800"
+                fontSize="12"
+                fill="white"
+              >
+                N
+              </text>
+            </svg>
+          </div>
+          <span className="logo-wordmark">
+            NEX<span className="logo-accent">ORA</span>
+          </span>
         </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+
+        <div className="auth-header">
+          <h1 className="auth-title">Create account</h1>
+          <p className="auth-subtitle">Fill in your details to register</p>
         </div>
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Confirmar Password</label>
-          <input
-            type="password"
-            value={passwordConfirmation}
-            onChange={(e) => setPasswordConfirmation(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Cargando...' : 'Registrarse'}
-        </button>
-      </form>
+
+        {error && (
+          <div className="auth-error">
+            {error}
+          </div>
+        )}
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label className="input-label">Name</label>
+            <input
+              className="input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Tu nombre"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Email</label>
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Password</label>
+            <input
+              className="input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Confirm password</label>
+            <input
+              className="input"
+              type="password"
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              placeholder="••••••••"
+              required
+            />
+          </div>
+
+          <button
+            className="btn btn-primary"
+            type="submit"
+            disabled={loading}
+            style={{ width: '100%', justifyContent: 'center' }}
+          >
+            {loading ? 'Cargando...' : 'Crear cuenta'}
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          ¿Already have an account? <a href="/login">Sign in</a>
+        </p>
+
+      </div>
     </div>
   )
 }

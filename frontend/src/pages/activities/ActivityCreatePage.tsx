@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createActivity } from '../../api/activities'
 import { getClients } from '../../api/clients'
+import '../clients/ClientCreatePage.css'
 
 interface Client {
   id: number
@@ -46,60 +47,104 @@ function ActivityCreatePage() {
   }
 
   return (
-    <div>
-      <h1>Nueva actividad</h1>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Título</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+    <div className="page">
+      <div className="page-header">
+        <div className="page-title-group">
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/activities')}>
+            ← Back
+          </button>
+          <h1 className="page-title">New activity</h1>
         </div>
-        <div>
-          <label>Descripción</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Estado</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="pending">Pendiente</option>
-            <option value="done">Completada</option>
-          </select>
-        </div>
-        <div>
-          <label>Fecha</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Cliente</label>
-          <select value={clientId} onChange={(e) => setClientId(e.target.value)} required>
-            <option value="">Selecciona un cliente</option>
-            {clients.map((client) => (
-              <option key={client.id} value={client.id}>
-                {client.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Guardando...' : 'Crear actividad'}
-        </button>
-        <button type="button" onClick={() => navigate('/activities')}>
-          Cancelar
-        </button>
-      </form>
+      </div>
+
+      <div className="form-body">
+        {error && <div className="auth-error">{error}</div>}
+
+        <form className="form-card" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label className="input-label">Title</label>
+            <input
+              className="input"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título de la actividad"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Description</label>
+            <textarea
+              className="input"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Descripción opcional..."
+              rows={2}
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label className="input-label">Status</label>
+              <select
+                className="input"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="pending">Pending</option>
+                <option value="in_progress">In progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Date</label>
+              <input
+                className="input"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Client</label>
+            <select
+              className="input"
+              value={clientId}
+              onChange={(e) => setClientId(e.target.value)}
+              required
+            >
+              <option value="">Select a client</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => navigate('/activities')}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={loading}
+            >
+              {loading ? 'Guardando...' : 'Crear actividad'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

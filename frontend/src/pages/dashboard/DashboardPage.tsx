@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getDashboard } from '../../api/dashboard'
+import './DashboardPage.css'
 
 interface DashboardData {
   clients_count: number
@@ -20,30 +21,34 @@ function DashboardPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <p>Cargando...</p>
-  if (error) return <p>{error}</p>
+  if (loading) return <div className="loading">Cargando...</div>
+  if (error) return <div className="error-msg">{error}</div>
   if (!data) return null
 
   return (
-    <div>
-      <h1>Dashboard</h1>
-      <div>
-        <div>
-          <h2>Clientes</h2>
-          <p>{data.clients_count}</p>
+    <div className="page">
+      <div className="dashboard-grid">
+
+        <div className="stat-card">
+          <span className="stat-label">Clients</span>
+          <span className="stat-value">{data.clients_count}</span>
         </div>
-        <div>
-          <h2>Actividades totales</h2>
-          <p>{data.activities_count}</p>
+
+        <div className="stat-card">
+          <span className="stat-label">Total activities</span>
+          <span className="stat-value">{data.activities_count}</span>
         </div>
-        <div>
-          <h2>Completadas este mes</h2>
-          <p>{data.activities_completed_this_month}</p>
+
+        <div className="stat-card stat-card--success">
+          <span className="stat-label">Completed this month</span>
+          <span className="stat-value">{data.activities_completed_this_month}</span>
         </div>
-        <div>
-          <h2>Pendientes</h2>
-          <p>{data.activities_pending}</p>
+
+        <div className="stat-card stat-card--warning">
+          <span className="stat-label">Pending</span>
+          <span className="stat-value">{data.activities_pending}</span>
         </div>
+
       </div>
     </div>
   )
