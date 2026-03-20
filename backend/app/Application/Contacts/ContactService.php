@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Client;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ContactService
 {
@@ -17,13 +18,14 @@ class ContactService
         return $client->contacts()->get();
     }
 
-    public function listForUser(User $user): Collection
+    public function listForUser(User $user): LengthAwarePaginator
     {
-        return Contact::whereHas('client', function ($query) use ($user) {
+        return Contact::with('client')
+        ->whereHas('client', function ($query) use ($user) {
             $user->isAdmin()
                 ? $query
                 : $query->where('user_id', $user->id);
-        })->get();
+        })->paginate(7);
     }
 
     public function create(Client $client, array $data): Contact
