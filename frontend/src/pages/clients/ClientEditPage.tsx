@@ -23,7 +23,7 @@ function ClientEditPage() {
         setPhone(client.phone ?? '')
         setAddress(client.address ?? '')
       })
-      .catch(() => setError('Error al cargar el cliente'))
+      .catch(() => setError('Error loading client'))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -36,13 +36,13 @@ function ClientEditPage() {
       await updateClient(Number(id), { name, email, phone, address })
       navigate('/clients')
     } catch {
-      setError('Error al actualizar el cliente')
+      setError('Error updating client')
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) return <div className="loading">Cargando...</div>
+  if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
 
   return (
@@ -67,7 +67,7 @@ function ClientEditPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre del cliente"
+              placeholder="Client name"
               required
             />
           </div>
@@ -80,7 +80,7 @@ function ClientEditPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@ejemplo.com"
+                placeholder="email@example.com"
                 required
               />
             </div>
@@ -104,7 +104,7 @@ function ClientEditPage() {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Calle, ciudad..."
+              placeholder="Street, city..."
             />
           </div>
 
@@ -121,7 +121,7 @@ function ClientEditPage() {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Guardando...' : 'Guardar cambios'}
+              {loading ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>

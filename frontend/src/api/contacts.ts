@@ -24,3 +24,9 @@ export async function deleteContact(clientId: number, id: number) {
   const response = await apiClient.delete(`/clients/${clientId}/contacts/${id}`)
   return response.data
 }
+
+export async function getAllContacts(page: number = 1) {
+  const response = await apiClient.get('/contacts', { params: { page } })
+  return response.data
+}
+

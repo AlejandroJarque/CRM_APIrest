@@ -483,6 +483,7 @@ tbody td:first-child {
   padding: 24px;
   flex: 1;
   overflow-y: auto;
+  height: 100%;
 }
 
 .page-header {

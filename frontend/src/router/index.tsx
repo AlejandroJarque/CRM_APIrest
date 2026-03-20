@@ -1,5 +1,5 @@
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 import DashboardPage from '../pages/dashboard/DashboardPage'
@@ -20,12 +20,14 @@ import UserDetailPage from '../pages/admin/UserDetailPage'
 import ProtectedRoute from './ProtectedRoute'
 import AdminRoute from './AdminRoute'
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage'
+import WelcomePage from '../pages/welcome/WelcomePage'
+import AllContactsPage from '../pages/contacts/AllContactsPage'
 
 function Router() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<WelcomePage />} />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -91,6 +93,11 @@ function Router() {
         <Route path="/activities/:id" element={
           <ProtectedRoute title="Activity detail">
             <ActivityDetailPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/contacts" element={
+          <ProtectedRoute title="Contacts">
+            <AllContactsPage />
           </ProtectedRoute>
         } />
 

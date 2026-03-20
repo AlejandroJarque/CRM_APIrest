@@ -22,7 +22,7 @@ function RegisterPage() {
       await registerApi(name, email, password, passwordConfirmation)
       navigate('/login')
     } catch {
-      setError('Error al registrar el usuario')
+      setError('Error registering user')
     } finally {
       setLoading(false)
     }
@@ -32,7 +32,7 @@ function RegisterPage() {
     <div className="auth-page">
       <div className="auth-card">
 
-        <div className="auth-logo">
+        <div className="auth-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <div className="logo-mark">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
               <text
@@ -71,7 +71,7 @@ function RegisterPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder="Your name"
               required
             />
           </div>
@@ -83,7 +83,7 @@ function RegisterPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
+              placeholder="your@email.com"
               required
             />
           </div>
@@ -118,7 +118,7 @@ function RegisterPage() {
             disabled={loading}
             style={{ width: '100%', justifyContent: 'center' }}
           >
-            {loading ? 'Cargando...' : 'Crear cuenta'}
+            {loading ? 'Loading...' : 'Create account'}
           </button>
         </form>
 

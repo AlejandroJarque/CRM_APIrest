@@ -29,7 +29,7 @@ function ProfilePage() {
         setName(response.data.name)
         setEmail(response.data.email)
       })
-      .catch(() => setError('Error al cargar el perfil'))
+      .catch(() => setError('Error loading profile'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -39,9 +39,9 @@ function ProfilePage() {
     setSuccess(null)
     try {
       await updateProfile({ name, email })
-      setSuccess('Perfil actualizado correctamente')
+      setSuccess('Profile updated successfully')
     } catch {
-      setError('Error al actualizar el perfil')
+      setError('Error updating profile')
     }
   }
 
@@ -55,12 +55,12 @@ function ProfilePage() {
         password: newPassword,
         password_confirmation: newPasswordConfirmation,
       })
-      setSuccess('Contraseña actualizada correctamente')
+      setSuccess('Password updated successfully')
       setCurrentPassword('')
       setNewPassword('')
       setNewPasswordConfirmation('')
     } catch {
-      setError('Error al actualizar la contraseña')
+      setError('Error updating password')
     }
   }
 
@@ -69,9 +69,6 @@ function ProfilePage() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <h1 className="page-title">Profile</h1>
-      </div>
 
       <div className="profile-body">
 

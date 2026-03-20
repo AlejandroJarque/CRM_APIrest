@@ -22,7 +22,7 @@ function ContactCreatePage() {
       await createContact(Number(clientId), { name, email, phone })
       navigate(`/clients/${clientId}/contacts`)
     } catch {
-      setError('Error al crear el contacto')
+      setError('Error creating contact')
     } finally {
       setLoading(false)
     }
@@ -53,7 +53,7 @@ function ContactCreatePage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre del contacto"
+              placeholder="Contact name"
               required
             />
           </div>
@@ -65,7 +65,7 @@ function ContactCreatePage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@ejemplo.com"
+              placeholder="email@example.com"
             />
           </div>
 
@@ -93,7 +93,7 @@ function ContactCreatePage() {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Guardando...' : 'Crear contacto'}
+              {loading ? 'Saving...' : 'Create contact'}
             </button>
           </div>
         </form>

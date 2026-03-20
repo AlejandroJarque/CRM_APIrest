@@ -21,9 +21,9 @@ interface Meta {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  pending:     'Pendiente',
-  in_progress: 'En progreso',
-  completed:   'Completada',
+  pending:     'Pending',
+  in_progress: 'In progress',
+  completed:   'Completed',
 }
 
 const STATUS_CLASS: Record<string, string> = {
@@ -48,17 +48,17 @@ function ActivitiesPage() {
         setActivities(response.data)
         setMeta(response.meta)
       })
-      .catch(() => setError('Error al cargar las actividades'))
+      .catch(() => setError('Error loading activities'))
       .finally(() => setLoading(false))
   }, [page])
 
   async function handleDelete(id: number) {
-    if (!confirm('¿Seguro que quieres eliminar esta actividad?')) return
+    if (!confirm('Are you sure you want to delete this activity?')) return
     try {
       await deleteActivity(id)
       setActivities(activities.filter((a) => a.id !== id))
     } catch {
-      alert('Error al eliminar la actividad')
+      alert('Error deleting activity')
     }
   }
 

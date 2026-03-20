@@ -22,7 +22,7 @@ function ClientCreatePage() {
       await createClient({ name, email, phone, address })
       navigate('/clients')
     } catch {
-      setError('Error al crear el cliente')
+      setError('Error creating client')
     } finally {
       setLoading(false)
     }
@@ -35,7 +35,7 @@ function ClientCreatePage() {
           <button className="btn btn-ghost btn-sm" onClick={() => navigate('/clients')}>
             ← Back
           </button>
-          <h1 className="page-title">Nuevo cliente</h1>
+          <h1 className="page-title">New client</h1>
         </div>
       </div>
 
@@ -50,7 +50,7 @@ function ClientCreatePage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre del cliente"
+              placeholder="Client name"
               required
             />
           </div>
@@ -63,7 +63,7 @@ function ClientCreatePage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@ejemplo.com"
+                placeholder="email@example.com"
                 required
               />
             </div>
@@ -87,7 +87,7 @@ function ClientCreatePage() {
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Calle, ciudad..."
+              placeholder="Street, city..."
             />
           </div>
 
@@ -104,7 +104,7 @@ function ClientCreatePage() {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Guardando...' : 'Crear cliente'}
+              {loading ? 'Saving...' : 'Create Client'}
             </button>
           </div>
         </form>

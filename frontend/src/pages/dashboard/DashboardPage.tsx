@@ -19,11 +19,11 @@ function DashboardPage() {
   useEffect(() => {
     getDashboard()
       .then(setData)
-      .catch(() => setError('Error al cargar el dashboard'))
+      .catch(() => setError('Error loading dashboard'))
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <div className="loading">Cargando...</div>
+  if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
   if (!data) return null
 

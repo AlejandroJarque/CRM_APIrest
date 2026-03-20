@@ -21,7 +21,7 @@ function ContactEditPage() {
         setEmail(contact.email ?? '')
         setPhone(contact.phone ?? '')
       })
-      .catch(() => setError('Error al cargar el contacto'))
+      .catch(() => setError('Error loading contact'))
       .finally(() => setLoading(false))
   }, [clientId, id])
 
@@ -34,13 +34,13 @@ function ContactEditPage() {
       await updateContact(Number(clientId), Number(id), { name, email, phone })
       navigate(`/clients/${clientId}/contacts`)
     } catch {
-      setError('Error al actualizar el contacto')
+      setError('Error updating contact')
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) return <div className="loading">Cargando...</div>
+  if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
 
   return (
@@ -68,7 +68,7 @@ function ContactEditPage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nombre del contacto"
+              placeholder="Contact name"
               required
             />
           </div>
@@ -80,7 +80,7 @@ function ContactEditPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@ejemplo.com"
+              placeholder="email@example.com"
             />
           </div>
 
@@ -108,7 +108,7 @@ function ContactEditPage() {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Guardando...' : 'Guardar cambios'}
+              {loading ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>

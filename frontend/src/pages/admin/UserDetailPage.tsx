@@ -28,7 +28,7 @@ function UserDetailPage() {
   useEffect(() => {
     getUser(Number(id))
       .then((response) => setUser(response.data))
-      .catch(() => setError('Error al cargar el usuario'))
+      .catch(() => setError('Error loading user'))
       .finally(() => setLoading(false))
   }, [id])
 
