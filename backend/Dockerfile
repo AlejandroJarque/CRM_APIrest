@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     zip \
     unzip \
+    nginx \
     && docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -23,6 +24,8 @@ RUN composer install --optimize-autoloader --no-dev
 
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 9000
+COPY ./docker/nginx.conf /etc/nginx/sites-available/default
+
+EXPOSE 80
 
 CMD ["/var/www/start.sh"]
