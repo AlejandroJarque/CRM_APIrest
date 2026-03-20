@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function() {
     Route::apiResource('activities', ActivityController::class);
 
     // Contacts
+    Route::get('/contacts', [ContactController::class, 'indexGlobal']);
     Route::apiResource('clients.contacts', ContactController::class);
 
     // Dashboard

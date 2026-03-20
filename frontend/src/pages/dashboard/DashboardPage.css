@@ -1,0 +1,48 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-card--success {
+  border-color: color-mix(in srgb, var(--lime) 30%, transparent);
+}
+
+.stat-card--warning {
+  border-color: color-mix(in srgb, var(--amber) 30%, transparent);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stat-card--success .stat-value {
+  color: var(--lime);
+}
+
+.stat-card--warning .stat-value {
+  color: var(--amber);
+}

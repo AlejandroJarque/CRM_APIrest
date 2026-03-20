@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getActivity, updateActivity } from '../../api/activities'
+import '../clients/ClientCreatePage.css'
 
 function ActivityEditPage() {
   const [title, setTitle] = useState('')
@@ -22,7 +23,7 @@ function ActivityEditPage() {
         setStatus(activity.status)
         setDate(activity.date.split('T')[0])
       })
-      .catch(() => setError('Error al cargar la actividad'))
+      .catch(() => setError('Error loading activity'))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -35,59 +36,97 @@ function ActivityEditPage() {
       await updateActivity(Number(id), { title, description, status, date })
       navigate('/activities')
     } catch {
-      setError('Error al actualizar la actividad')
+      setError('Error updating activity')
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) return <p>Cargando...</p>
-  if (error) return <p>{error}</p>
+  if (loading) return <div className="loading">Loading...</div>
+  if (error) return <div className="error-msg">{error}</div>
 
   return (
-    <div>
-      <h1>Editar actividad</h1>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Título</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+    <div className="page">
+      <div className="page-header">
+        <div className="page-title-group">
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/activities')}>
+            ← Back
+          </button>
+          <h1 className="page-title">Edit activity</h1>
         </div>
-        <div>
-          <label>Descripción</label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Estado</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="pending">Pendiente</option>
-            <option value="done">Completada</option>
-          </select>
-        </div>
-        <div>
-          <label>Fecha</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Guardando...' : 'Guardar cambios'}
-        </button>
-        <button type="button" onClick={() => navigate('/activities')}>
-          Cancelar
-        </button>
-      </form>
+      </div>
+
+      <div className="form-body">
+        {error && <div className="auth-error">{error}</div>}
+
+        <form className="form-card" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label className="input-label">Title</label>
+            <input
+              className="input"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Activity title"
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Description</label>
+            <textarea
+              className="input"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Optional description..."
+              rows={2}
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="input-group">
+              <label className="input-label">Status</label>
+              <select
+                className="input"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
+                <option value="pending">Pending</option>
+                <option value="in_progress">In progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Date</label>
+              <input
+                className="input"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => navigate('/activities')}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : 'Save changes'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

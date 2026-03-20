@@ -1,20 +1,32 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import AppLayout from '../components/layout/AppLayout'
 
-function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated, isLoading } = useAuth()
+interface Props {
+  children: React.ReactNode
+  title: string
+  actions?: React.ReactNode
+}
 
-  if (isLoading) return null
+function AdminRoute({ children, title, actions }: Props) {
+  const { isAuthenticated, isLoading, user } = useAuth()
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+  if (isLoading) {
+    return (
+      <div className="loading" style={{ height: '100vh' }}>
+        Cargando...
+      </div>
+    )
   }
 
-  if (user?.role !== 'admin') {
-    return <Navigate to="/dashboard" replace />
-  }
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+  if (user?.role !== 'admin') return <Navigate to="/dashboard" replace />
 
-  return children
+  return (
+    <AppLayout title={title} actions={actions}>
+      {children}
+    </AppLayout>
+  )
 }
 
 export default AdminRoute

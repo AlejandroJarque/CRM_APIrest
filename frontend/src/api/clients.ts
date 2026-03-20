@@ -1,7 +1,7 @@
 import apiClient from './client'
 
-export async function getClients() {
-  const response = await apiClient.get('/clients')
+export async function getClients(page = 1) {
+  const response = await apiClient.get('/clients', { params: { page } })
   return response.data
 }
 

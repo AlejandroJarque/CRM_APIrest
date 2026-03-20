@@ -370,7 +370,7 @@ components:
           ### GET /api/clients/{clientId}/contacts
 
           **Purpose**
-          List all contacts of a client.
+          List all contacts accessible to the authenticated user across all clients.
 
           **Authorization**
           - user: only contacts of their own clients
@@ -1101,7 +1101,7 @@ paths:
     get:
       summary: List contacts
       tags: [Contacts]
-      description: Returns contacts of a client visible to the authenticated user.
+      description: Returns all contacts accessible to the authenticated user across all clients.
       parameters:
         - name: clientId
           in: path
@@ -1501,12 +1501,41 @@ paths:
                     items:
                       type: object
                       required:
-                        - activity_id
+                        - clients_count
+                        - activities_count
+                        - activities_completed_this_month
+                        - activities_pending
+                        - activity_chart
+                        - upcoming_activities
                       properties:
-                        activity_id:
+                        clients_count:
                           type: integer
-                          description: Identifier of the pending activity
-                          example: 42
+                          example: 5
+                        activities_count:
+                          type: integer
+                          example: 12
+                        activities_completed_this_month:
+                          type: integer
+                          example: 3
+                        activities_pending:
+                          type: integer
+                          example: 7
+                        activity_chart:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              date: { type: string, format: date, example: "2026-03-01" }
+                              count: { type: integer, example: 4 }
+                        upcoming_activities:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id: { type: integer, example: 1 }
+                              title: { type: string, example: "Follow up call" }
+                              date: { type: string, format: date, example: "2026-03-20" }
+                              status: { type: string, example: "pending" }
         "401":
           description: Unauthorized - authentication token is missing or invalid
           content:

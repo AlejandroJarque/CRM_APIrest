@@ -5,15 +5,27 @@ namespace App\Application\Contacts;
 use App\Events\ContactCreated;
 use App\Events\ContactDeleted;
 use App\Events\ContactUpdated;
+use App\Models\User;
 use App\Models\Client;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ContactService
 {
     public function listForClient(Client $client): Collection
     {
         return $client->contacts()->get();
+    }
+
+    public function listForUser(User $user): LengthAwarePaginator
+    {
+        return Contact::with('client')
+        ->whereHas('client', function ($query) use ($user) {
+            $user->isAdmin()
+                ? $query
+                : $query->where('user_id', $user->id);
+        })->paginate(7);
     }
 
     public function create(Client $client, array $data): Contact

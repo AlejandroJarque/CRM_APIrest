@@ -22,7 +22,7 @@ class ActivityService
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(15);
+        return $query->orderBy('created_at', 'desc')->paginate(7);
     }
 
     public function createForClient(Client $client, array $data): Activity

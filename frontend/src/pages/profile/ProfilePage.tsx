@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { getProfile, updateProfile, updatePassword } from '../../api/profile'
+import './ProfilePage.css'
+import '../clients/ClientCreatePage.css'
 
 interface Profile {
   id: number
@@ -21,8 +22,6 @@ function ProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  const navigate = useNavigate()
-
   useEffect(() => {
     getProfile()
       .then((response) => {
@@ -30,7 +29,7 @@ function ProfilePage() {
         setName(response.data.name)
         setEmail(response.data.email)
       })
-      .catch(() => setError('Error al cargar el perfil'))
+      .catch(() => setError('Error loading profile'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -40,9 +39,9 @@ function ProfilePage() {
     setSuccess(null)
     try {
       await updateProfile({ name, email })
-      setSuccess('Perfil actualizado correctamente')
+      setSuccess('Profile updated successfully')
     } catch {
-      setError('Error al actualizar el perfil')
+      setError('Error updating profile')
     }
   }
 
@@ -56,83 +55,112 @@ function ProfilePage() {
         password: newPassword,
         password_confirmation: newPasswordConfirmation,
       })
-      setSuccess('Contraseña actualizada correctamente')
+      setSuccess('Password updated successfully')
       setCurrentPassword('')
       setNewPassword('')
       setNewPasswordConfirmation('')
     } catch {
-      setError('Error al actualizar la contraseña')
+      setError('Error updating password')
     }
   }
 
-  if (loading) return <p>Cargando...</p>
+  if (loading) return <div className="loading">Loading...</div>
   if (!profile) return null
 
   return (
-    <div>
-      <h1>Mi perfil</h1>
-      <p><strong>Rol:</strong> {profile.role}</p>
-      <p><strong>Miembro desde:</strong> {profile.created_at.split('T')[0]}</p>
+    <div className="page">
 
-      {error && <p>{error}</p>}
-      {success && <p>{success}</p>}
+      <div className="profile-body">
 
-      <h2>Datos personales</h2>
-      <form onSubmit={handleUpdateProfile}>
-        <div>
-          <label>Nombre</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+        <div className="profile-card">
+          <div className="profile-avatar">
+            {profile.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()}
+          </div>
+          <div className="profile-info">
+            <span className="profile-name">{profile.name}</span>
+            <span className="profile-meta">{profile.role} · Member since {profile.created_at.split('T')[0]}</span>
+          </div>
         </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Guardar cambios</button>
-      </form>
 
-      <h2>Cambiar contraseña</h2>
-      <form onSubmit={handleUpdatePassword}>
-        <div>
-          <label>Contraseña actual</label>
-          <input
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Nueva contraseña</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Confirmar nueva contraseña</label>
-          <input
-            type="password"
-            value={newPasswordConfirmation}
-            onChange={(e) => setNewPasswordConfirmation(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Cambiar contraseña</button>
-      </form>
+        {error && <div className="auth-error">{error}</div>}
+        {success && <div className="profile-success">{success}</div>}
 
-      <button onClick={() => navigate('/dashboard')}>Volver</button>
+        <form className="form-card" onSubmit={handleUpdateProfile}>
+          <h2 className="form-section-title">Personal info</h2>
+
+          <div className="input-group">
+            <label className="input-label">Name</label>
+            <input
+              className="input"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Email</label>
+            <input
+              className="input"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="btn btn-primary">
+              Save Changes
+            </button>
+          </div>
+        </form>
+
+        <form className="form-card" onSubmit={handleUpdatePassword}>
+          <h2 className="form-section-title">Change password</h2>
+
+          <div className="input-group">
+            <label className="input-label">Current password</label>
+            <input
+              className="input"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">New password</label>
+            <input
+              className="input"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Confirm new password</label>
+            <input
+              className="input"
+              type="password"
+              value={newPasswordConfirmation}
+              onChange={(e) => setNewPasswordConfirmation(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="btn btn-primary">
+              Change password
+            </button>
+          </div>
+        </form>
+
+      </div>
     </div>
   )
 }
