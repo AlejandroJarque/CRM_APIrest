@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react'
-import { getClients, deleteClient } from '../../api/clients'
 import { useNavigate } from 'react-router-dom'
-import './ClientsPage.css'
+import { getAllContacts } from '../../api/contacts'
+import '../clients/ClientsPage.css'
 
-interface Client {
+interface Contact {
   id: number
+  client_id: number
+  client_name: string
   name: string
   email: string
   phone: string
-  address: string
+  position: string
 }
 
 interface Meta {
   current_page: number
   last_page: number
-  per_page: number
   total: number
 }
 
-function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>([])
+function AllContactsPage() {
+  const [contacts, setContacts] = useState<Contact[]>([])
   const [meta, setMeta] = useState<Meta | null>(null)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -28,24 +29,14 @@ function ClientsPage() {
 
   useEffect(() => {
     setLoading(true)
-    getClients(page)
+    getAllContacts(page)
       .then((response) => {
-        setClients(response.data)
+        setContacts(response.data)
         setMeta(response.meta)
       })
-      .catch(() => setError('Error loading clients'))
+      .catch(() => setError('Error loading contacts'))
       .finally(() => setLoading(false))
   }, [page])
-
-  async function handleDelete(id: number) {
-    if (!confirm('Are you sure you want to delete this client?')) return
-    try {
-      await deleteClient(id)
-      setClients(clients.filter((c) => c.id !== id))
-    } catch {
-      alert('Error deleting client')
-    }
-  }
 
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
@@ -54,20 +45,14 @@ function ClientsPage() {
     <div className="page">
       <div className="page-header">
         <div className="page-title-group">
-          <h1 className="page-title">Clients</h1>
-          <span className="count-pill">{meta?.total ?? clients.length}</span>
+          <h1 className="page-title">Contacts</h1>
+          <span className="count-pill">{meta?.total ?? contacts.length}</span>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/clients/create')}>
-          New client
-        </button>
       </div>
 
-      {clients.length === 0 ? (
+      {contacts.length === 0 ? (
         <div className="empty-state">
-          <span>No clients yet</span>
-          <button className="btn btn-primary" onClick={() => navigate('/clients/create')}>
-            Create first client
-          </button>
+          <span>No contacts yet</span>
         </div>
       ) : (
         <>
@@ -76,36 +61,35 @@ function ClientsPage() {
               <thead>
                 <tr>
                   <th>Name</th>
+                  <th>Position</th>
                   <th>Email</th>
                   <th>Phone</th>
+                  <th>Client</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {clients.map((client) => (
-                  <tr key={client.id}>
-                    <td className="td-name">{client.name}</td>
-                    <td className="td-secondary">{client.email}</td>
-                    <td className="td-secondary">{client.phone}</td>
+                {contacts.map((contact) => (
+                  <tr key={contact.id}>
+                    <td className="td-name">{contact.name}</td>
+                    <td className="td-secondary">{contact.position ?? '—'}</td>
+                    <td className="td-secondary">{contact.email ?? '—'}</td>
+                    <td className="td-secondary">{contact.phone ?? '—'}</td>
+                    <td className="td-secondary">
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => navigate(`/clients/${contact.client_id}`)}
+                      >
+                        {contact.client_name}
+                      </button>
+                    </td>
                     <td>
                       <div className="row-actions">
                         <button
                           className="btn btn-ghost btn-sm"
-                          onClick={() => navigate(`/clients/${client.id}`)}
-                        >
-                          View
-                        </button>
-                        <button
-                          className="btn btn-ghost btn-sm"
-                          onClick={() => navigate(`/clients/${client.id}/edit`)}
+                          onClick={() => navigate(`/clients/${contact.client_id}/contacts/${contact.id}/edit`)}
                         >
                           Edit
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleDelete(client.id)}
-                        >
-                          Delete
                         </button>
                       </div>
                     </td>
@@ -124,9 +108,7 @@ function ClientsPage() {
               >
                 ← Back
               </button>
-              <span className="pagination-info">
-                {page} / {meta.last_page}
-              </span>
+              <span className="pagination-info">{page} / {meta.last_page}</span>
               <button
                 className="btn btn-ghost btn-sm"
                 onClick={() => setPage(p => p + 1)}
@@ -142,4 +124,4 @@ function ClientsPage() {
   )
 }
 
-export default ClientsPage
+export default AllContactsPage

@@ -22,17 +22,17 @@ function ContactsPage() {
   useEffect(() => {
     getContacts(Number(clientId))
       .then((response) => setContacts(response.data))
-      .catch(() => setError('Error al cargar los contactos'))
+      .catch(() => setError('Error loading contact'))
       .finally(() => setLoading(false))
   }, [clientId])
 
   async function handleDelete(id: number) {
-    if (!confirm('¿Seguro que quieres eliminar este contacto?')) return
+    if (!confirm('Are you sure you want to delete this contact?')) return
     try {
       await deleteContact(Number(clientId), id)
       setContacts(contacts.filter((c) => c.id !== id))
     } catch {
-      alert('Error al eliminar el contacto')
+      alert('Error deleting contact')
     }
   }
 
@@ -49,7 +49,7 @@ function ContactsPage() {
           >
             ← Back
           </button>
-          <h1 className="page-title">Contactos</h1>
+          <h1 className="page-title">Contacts</h1>
           <span className="count-pill">{contacts.length}</span>
         </div>
         <button

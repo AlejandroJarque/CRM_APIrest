@@ -23,7 +23,7 @@ function LoginPage() {
       await login(data.access_token)
       navigate('/dashboard')
     } catch {
-      setError('Email o contraseña incorrectos')
+      setError('Invalid email or password')
     } finally {
       setLoading(false)
     }
@@ -33,7 +33,7 @@ function LoginPage() {
     <div className="auth-page">
       <div className="auth-card">
 
-        <div className="auth-logo">
+        <div className="auth-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <div className="logo-mark">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
               <text
@@ -72,7 +72,7 @@ function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@email.com"
+              placeholder="your@email.com"
               required
             />
           </div>
@@ -95,7 +95,7 @@ function LoginPage() {
             disabled={loading}
             style={{ width: '100%', justifyContent: 'center' }}
           >
-            {loading ? 'Cargando...' : 'Iniciar sesión'}
+            {loading ? 'Loading...' : 'Sign in'}
           </button>
         </form>
 

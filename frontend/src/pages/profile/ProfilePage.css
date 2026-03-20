@@ -1,9 +1,10 @@
 .profile-body {
   padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 560px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 12px;
+  align-items: start;
 }
 
 .profile-card {
@@ -63,4 +64,10 @@
   font-size: 13px;
   padding: 10px 12px;
   border-radius: var(--radius-sm);
+}
+
+.profile-card,
+.auth-error,
+.profile-success {
+  grid-column: 1 / -1;
 }

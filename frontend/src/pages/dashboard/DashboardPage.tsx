@@ -7,6 +7,8 @@ interface DashboardData {
   activities_count: number
   activities_completed_this_month: number
   activities_pending: number
+  activity_chart: { month: string; count: number }[]
+  upcoming_activities: { id: number; subject: string; scheduled_at: string }[]
 }
 
 function DashboardPage() {
@@ -17,11 +19,11 @@ function DashboardPage() {
   useEffect(() => {
     getDashboard()
       .then(setData)
-      .catch(() => setError('Error al cargar el dashboard'))
+      .catch(() => setError('Error loading dashboard'))
       .finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <div className="loading">Cargando...</div>
+  if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
   if (!data) return null
 
@@ -50,6 +52,20 @@ function DashboardPage() {
         </div>
 
       </div>
+
+      {data.upcoming_activities.length > 0 && (
+        <div className="dashboard-section">
+          <h2 className="section-title">Upcoming activities</h2>
+          <ul className="upcoming-list">
+            {data.upcoming_activities.map(activity => (
+              <li key={activity.id} className="upcoming-item">
+                <span>{activity.subject}</span>
+                <span>{activity.scheduled_at}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }

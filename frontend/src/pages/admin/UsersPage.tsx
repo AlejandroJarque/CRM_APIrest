@@ -27,7 +27,7 @@ function UsersPage() {
   useEffect(() => {
     getUsers()
       .then((response) => setUsers(response.data))
-      .catch(() => setError('Error al cargar los usuarios'))
+      .catch(() => setError('Error loading users'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -54,7 +54,7 @@ function UsersPage() {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
-                <th>Rol</th>
+                <th>Role</th>
                 <th>Member since</th>
                 <th>Actions</th>
               </tr>

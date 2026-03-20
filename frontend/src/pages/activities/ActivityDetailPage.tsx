@@ -15,9 +15,9 @@ interface Activity {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  pending:     'Pendiente',
-  in_progress: 'En progreso',
-  completed:   'Completada',
+  pending:     'Pending',
+  in_progress: 'In progress',
+  completed:   'Completed',
 }
 
 const STATUS_CLASS: Record<string, string> = {
@@ -37,7 +37,7 @@ function ActivityDetailPage() {
   useEffect(() => {
     getActivity(Number(id))
       .then((response) => setActivity(response.data))
-      .catch(() => setError('Error al cargar la actividad'))
+      .catch(() => setError('Error loading activity'))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -70,7 +70,7 @@ function ActivityDetailPage() {
           <h2 className="detail-section-title">General info</h2>
           <div className="detail-fields">
             <div className="detail-field">
-              <span className="detail-label">Descriptions</span>
+              <span className="detail-label">Description</span>
               <span className="detail-value">{activity.description ?? '—'}</span>
             </div>
             <div className="detail-field">

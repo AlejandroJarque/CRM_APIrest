@@ -40,7 +40,7 @@ function ActivityCreatePage() {
       })
       navigate('/activities')
     } catch {
-      setError('Error al crear la actividad')
+      setError('Error creating activity')
     } finally {
       setLoading(false)
     }
@@ -68,7 +68,7 @@ function ActivityCreatePage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Título de la actividad"
+              placeholder="Activity title"
               required
             />
           </div>
@@ -79,7 +79,7 @@ function ActivityCreatePage() {
               className="input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descripción opcional..."
+              placeholder="Optional description..."
               rows={2}
             />
           </div>
@@ -140,7 +140,7 @@ function ActivityCreatePage() {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Guardando...' : 'Crear actividad'}
+              {loading ? 'Saving...' : 'Create activity'}
             </button>
           </div>
         </form>

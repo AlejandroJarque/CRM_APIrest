@@ -13,6 +13,15 @@ services:
     depends_on:
       - db
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crm_frontend
+    restart: unless-stopped
+    networks:
+      - crm_network
+
   nginx:
     image: nginx:alpine
     container_name: crm_nginx
@@ -26,6 +35,7 @@ services:
       - crm_network
     depends_on:
       - app
+      - frontend
 
   db:
     image: mysql:8.0

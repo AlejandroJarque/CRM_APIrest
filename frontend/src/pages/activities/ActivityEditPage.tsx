@@ -23,7 +23,7 @@ function ActivityEditPage() {
         setStatus(activity.status)
         setDate(activity.date.split('T')[0])
       })
-      .catch(() => setError('Error al cargar la actividad'))
+      .catch(() => setError('Error loading activity'))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -36,13 +36,13 @@ function ActivityEditPage() {
       await updateActivity(Number(id), { title, description, status, date })
       navigate('/activities')
     } catch {
-      setError('Error al actualizar la actividad')
+      setError('Error updating activity')
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) return <div className="loading">Cargando...</div>
+  if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
 
   return (
@@ -67,7 +67,7 @@ function ActivityEditPage() {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Título de la actividad"
+              placeholder="Activity title"
               required
             />
           </div>
@@ -78,7 +78,7 @@ function ActivityEditPage() {
               className="input"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Descripción opcional..."
+              placeholder="Optional description..."
               rows={2}
             />
           </div>
@@ -93,7 +93,7 @@ function ActivityEditPage() {
               >
                 <option value="pending">Pending</option>
                 <option value="in_progress">In progress</option>
-                <option value="completed">Completed at</option>
+                <option value="completed">Completed</option>
               </select>
             </div>
 
@@ -122,7 +122,7 @@ function ActivityEditPage() {
               className="btn btn-primary"
               disabled={loading}
             >
-              {loading ? 'Guardando...' : 'Guardar cambios'}
+              {loading ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>

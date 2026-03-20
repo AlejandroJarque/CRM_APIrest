@@ -22,11 +22,11 @@ function ClientDetailPage() {
   useEffect(() => {
     getClient(Number(id))
       .then((response) => setClient(response.data))
-      .catch(() => setError('Error al cargar el cliente'))
+      .catch(() => setError('Error loading client'))
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) return <div className="loading">Cargando...</div>
+  if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
   if (!client) return null
 

@@ -50,6 +50,14 @@ class DashboardService
             ])
             ->values()
             ->toArray();
+        
+        $upcomingActivities = (clone $activitiesQuery)
+            ->whereNull('completed_at')
+            ->whereDate('date', '>=', now()->toDateString())
+            ->orderBy('date', 'asc')
+            ->limit(5)
+            ->get(['id', 'title', 'date', 'status'])
+            ->toArray();
 
         return [
             'clients_count'                   => $clientsCount,
@@ -57,6 +65,7 @@ class DashboardService
             'activities_completed_this_month' => $activitiesCompletedThisMonth,
             'activities_pending'              => $activitiesPending,
             'activity_chart'                  => $activityChart,
+            'upcoming_activities'             => $upcomingActivities,
         ];
     }
 }
