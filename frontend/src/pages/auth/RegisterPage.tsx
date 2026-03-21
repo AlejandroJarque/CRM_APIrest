@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { register as registerApi } from '../../api/auth'
+import { useAuth } from '../../context/AuthContext'
 import '../auth/LoginPage.css'
 
 function RegisterPage() {
@@ -12,6 +13,7 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -19,8 +21,9 @@ function RegisterPage() {
     setLoading(true)
 
     try {
-      await registerApi(name, email, password, passwordConfirmation)
-      navigate('/login')
+      const response = await registerApi(name, email, password, passwordConfirmation)
+      await login(response.data.token)
+      navigate('/dashboard')
     } catch {
       setError('Error registering user')
     } finally {
