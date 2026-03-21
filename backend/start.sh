@@ -11,6 +11,9 @@ php artisan passport:keys --force
 echo "Creating Passport personal access client..."
 php artisan passport:client --personal --no-interaction
 
+echo "Clearing cache..."
+php artisan optimize:clear
+
 echo "Caching configuration..."
 php artisan config:cache
 php artisan route:cache

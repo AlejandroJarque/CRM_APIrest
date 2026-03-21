@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    
     public function __invoke(Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -20,17 +19,22 @@ class RegisterController extends Controller
 
         $user = User::create([
             'name' => $data['name'],
-            'email' =>  $data['email'],
+            'email' => $data['email'],
             'password' => $data['password'],
             'role' => User::ROLE_USER,
         ]);
 
+        $token = $user->createToken('auth_token')->accessToken;
+
         return response()->json([
             'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ],
             ],
         ], 201);
     }
