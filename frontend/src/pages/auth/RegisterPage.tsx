@@ -126,7 +126,7 @@ function RegisterPage() {
         </form>
 
         <p className="auth-footer">
-          ¿Already have an account? <a href="/login">Sign in</a>
+          ¿Already have an account? <span className="auth-link" onClick={() => navigate('/login')}>Sign in</span>
         </p>
 
       </div>

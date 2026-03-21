@@ -9,7 +9,9 @@ function ActivityEditPage() {
   const [status, setStatus] = useState('pending')
   const [date, setDate] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loadingInitial, setLoadingInitial] = useState(true)
+  const [loadingSubmit, setLoadingSubmit] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const navigate = useNavigate()
   const { id } = useParams()
@@ -23,14 +25,14 @@ function ActivityEditPage() {
         setStatus(activity.status)
         setDate(activity.date.split('T')[0])
       })
-      .catch(() => setError('Error loading activity'))
-      .finally(() => setLoading(false))
+      .catch(() => setLoadError('Error loading activity'))
+      .finally(() => setLoadingInitial(false))
   }, [id])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
-    setLoading(true)
+    setLoadingSubmit(true)
 
     try {
       await updateActivity(Number(id), { title, description, status, date })
@@ -38,12 +40,12 @@ function ActivityEditPage() {
     } catch {
       setError('Error updating activity')
     } finally {
-      setLoading(false)
+      setLoadingSubmit(false)
     }
   }
 
-  if (loading) return <div className="loading">Loading...</div>
-  if (error) return <div className="error-msg">{error}</div>
+  if (loadingInitial) return <div className="loading">Loading...</div>
+  if (loadError) return <div className="error-msg">{loadError}</div>
 
   return (
     <div className="page">
@@ -93,7 +95,7 @@ function ActivityEditPage() {
               >
                 <option value="pending">Pending</option>
                 <option value="in_progress">In progress</option>
-                <option value="completed">Completed</option>
+                <option value="done">Completed</option>
               </select>
             </div>
 
@@ -120,9 +122,9 @@ function ActivityEditPage() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={loading}
+              disabled={loadingSubmit}
             >
-              {loading ? 'Saving...' : 'Save changes'}
+              {loadingSubmit ? 'Saving...' : 'Save changes'}
             </button>
           </div>
         </form>

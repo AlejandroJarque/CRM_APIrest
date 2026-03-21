@@ -100,7 +100,7 @@ function LoginPage() {
         </form>
 
         <p className="auth-footer">
-          ¿Don't have an account? <a href="/register">Sign up</a>
+          ¿Don't have an account? <span className="auth-link" onClick={() => navigate('/register')}>Sign up</span>
         </p>
 
       </div>

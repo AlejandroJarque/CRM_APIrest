@@ -23,13 +23,13 @@ interface Meta {
 const STATUS_LABEL: Record<string, string> = {
   pending:     'Pending',
   in_progress: 'In progress',
-  completed:   'Completed',
+  done:   'Completed',
 }
 
 const STATUS_CLASS: Record<string, string> = {
   pending:     'badge badge--pending',
   in_progress: 'badge badge--progress',
-  completed:   'badge badge--done',
+  done:   'badge badge--done',
 }
 
 function ActivitiesPage() {

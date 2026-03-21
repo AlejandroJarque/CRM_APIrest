@@ -94,7 +94,7 @@ function ActivityCreatePage() {
               >
                 <option value="pending">Pending</option>
                 <option value="in_progress">In progress</option>
-                <option value="completed">Completed</option>
+                <option value="done">Completed</option>
               </select>
             </div>
 
@@ -105,6 +105,7 @@ function ActivityCreatePage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
                 required
               />
             </div>
