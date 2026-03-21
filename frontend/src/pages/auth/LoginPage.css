@@ -72,3 +72,13 @@
 .auth-footer a:hover {
   text-decoration: underline;
 }
+
+.auth-link {
+  color: var(--blue);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
