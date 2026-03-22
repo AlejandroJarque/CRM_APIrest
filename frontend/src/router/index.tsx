@@ -9,7 +9,6 @@ import ClientDetailPage from '../pages/clients/ClientDetailPage'
 import ContactsPage from '../pages/contacts/ContactsPage'
 import ContactEditPage from '../pages/contacts/ContactEditPage'
 import ActivitiesPage from '../pages/activities/ActivitiesPage'
-import ActivityCreatePage from '../pages/activities/ActivityCreatePage'
 import ActivityEditPage from '../pages/activities/ActivityEditPage'
 import ActivityDetailPage from '../pages/activities/ActivityDetailPage'
 import ProfilePage from '../pages/profile/ProfilePage'
@@ -70,11 +69,7 @@ function Router() {
             <ActivitiesPage />
           </ProtectedRoute>
         } />
-        <Route path="/activities/create" element={
-          <ProtectedRoute title="New activity">
-            <ActivityCreatePage />
-          </ProtectedRoute>
-        } />
+        
         <Route path="/activities/:id/edit" element={
           <ProtectedRoute title="Edit activity">
             <ActivityEditPage />

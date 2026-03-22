@@ -1,35 +1,48 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { createActivity } from '../../api/activities'
 import { getClients } from '../../api/clients'
-import '../clients/ClientCreatePage.css'
+import { createActivity } from '../../api/activities'
+import '../CreateContactModal/CreateContactModal.css'
 
 interface Client {
   id: number
   name: string
 }
 
-function ActivityCreatePage() {
+interface Props {
+  onClose: () => void
+  onCreated: () => void
+}
+
+export default function CreateActivityModal({ onClose, onCreated }: Props) {
+  const [clients, setClients] = useState<Client[]>([])
+  const [clientId, setClientId] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState('pending')
   const [date, setDate] = useState('')
-  const [clientId, setClientId] = useState('')
-  const [clients, setClients] = useState<Client[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-
-  const navigate = useNavigate()
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     getClients().then((response) => setClients(response.data))
   }, [])
 
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!clientId) {
+      setError('Please select a client')
+      return
+    }
     setError(null)
     setLoading(true)
-
     try {
       await createActivity({
         title,
@@ -38,7 +51,7 @@ function ActivityCreatePage() {
         date,
         client_id: Number(clientId),
       })
-      navigate('/activities')
+      onCreated()
     } catch {
       setError('Error creating activity')
     } finally {
@@ -47,20 +60,16 @@ function ActivityCreatePage() {
   }
 
   return (
-    <div className="page">
-      <div className="page-header">
-        <div className="page-title-group">
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/activities')}>
-            ← Back
-          </button>
-          <h1 className="page-title">New activity</h1>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title">New activity</h2>
+          <button className="modal-close" onClick={onClose}>✕</button>
         </div>
-      </div>
 
-      <div className="form-body">
         {error && <div className="auth-error">{error}</div>}
 
-        <form className="form-card" onSubmit={handleSubmit}>
+        <form className="modal-form" onSubmit={handleSubmit}>
           <div className="input-group">
             <label className="input-label">Title</label>
             <input
@@ -76,7 +85,7 @@ function ActivityCreatePage() {
           <div className="input-group">
             <label className="input-label">Description</label>
             <textarea
-              className="input"
+              className="textarea"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Optional description..."
@@ -88,7 +97,7 @@ function ActivityCreatePage() {
             <div className="input-group">
               <label className="input-label">Status</label>
               <select
-                className="input"
+                className="select"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
@@ -97,7 +106,6 @@ function ActivityCreatePage() {
                 <option value="done">Completed</option>
               </select>
             </div>
-
             <div className="input-group">
               <label className="input-label">Date</label>
               <input
@@ -105,7 +113,6 @@ function ActivityCreatePage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
                 required
               />
             </div>
@@ -114,7 +121,7 @@ function ActivityCreatePage() {
           <div className="input-group">
             <label className="input-label">Client</label>
             <select
-              className="input"
+              className="select"
               value={clientId}
               onChange={(e) => setClientId(e.target.value)}
               required
@@ -128,19 +135,11 @@ function ActivityCreatePage() {
             </select>
           </div>
 
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => navigate('/activities')}
-            >
+          <div className="modal-actions">
+            <button type="button" className="btn btn-ghost" onClick={onClose}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
+            <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Saving...' : 'Create activity'}
             </button>
           </div>
@@ -149,5 +148,3 @@ function ActivityCreatePage() {
     </div>
   )
 }
-
-export default ActivityCreatePage
