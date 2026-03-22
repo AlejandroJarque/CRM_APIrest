@@ -5,7 +5,6 @@ namespace App\Application\Dashboard;
 use App\Models\Activity;
 use App\Models\Client;
 use App\Models\User;
-use App\Models\UserActivityLog;
 use Illuminate\Support\Facades\DB;
 
 class DashboardService
@@ -33,28 +32,40 @@ class DashboardService
             ->whereNull('completed_at')
             ->count();
 
-        $activityChart = UserActivityLog::query()
-            ->where('user_id', $user->id)
-            ->whereMonth('occurred_at', now()->month)
-            ->whereYear('occurred_at', now()->year)
+        $driver = DB::connection()->getDriverName();
+
+        $monthExpression = $driver === 'sqlite'
+            ? DB::raw("strftime('%Y-%m', completed_at) as month")
+            : DB::raw("DATE_FORMAT(completed_at, '%Y-%m') as month");
+
+        $activityChart = (clone $activitiesQuery)
+            ->whereNotNull('completed_at')
+            ->where('completed_at', '>=', now()->subMonths(5)->startOfMonth())
             ->select(
-                DB::raw('DATE(occurred_at) as date'),
+                $monthExpression,
                 DB::raw('COUNT(*) as count')
             )
-            ->groupBy('date')
-            ->orderBy('date')
+            ->groupBy('month')
+            ->orderBy('month')
             ->get()
             ->map(fn($row) => [
-                'date'  => $row->date,
+                'month' => $row->month,
                 'count' => $row->count,
             ])
             ->values()
             ->toArray();
-        
+
         $upcomingActivities = (clone $activitiesQuery)
             ->whereNull('completed_at')
             ->whereDate('date', '>=', now()->toDateString())
             ->orderBy('date', 'asc')
+            ->limit(5)
+            ->get(['id', 'title', 'date', 'status'])
+            ->toArray();
+
+        $recentActivities = (clone $activitiesQuery)
+            ->whereNotNull('completed_at')
+            ->orderBy('completed_at', 'desc')
             ->limit(5)
             ->get(['id', 'title', 'date', 'status'])
             ->toArray();
@@ -66,6 +77,7 @@ class DashboardService
             'activities_pending'              => $activitiesPending,
             'activity_chart'                  => $activityChart,
             'upcoming_activities'             => $upcomingActivities,
+            'recent_activities'               => $recentActivities,
         ];
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\DomainEvents;
 
+use App\Models\Activity;
 use App\Models\Client;
 use App\Models\Contact;
-use App\Models\Activity;
 use App\Models\User;
 use App\Models\UserActivityLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +19,7 @@ class ActivityLogTest extends TestCase
         $user = User::factory()->create();
 
         $this->actingAs($user, 'api')->postJson('/api/clients', [
-            'name' => 'Acme Corp',
+            'name'  => 'Acme Corp',
             'email' => 'acme@example.com',
         ]);
 
@@ -31,7 +31,7 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenClientIsUpdated(): void
     {
-        $user = User::factory()->create();
+        $user   = User::factory()->create();
         $client = Client::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user, 'api')->patchJson("/api/clients/{$client->id}", [
@@ -46,7 +46,7 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenClientIsDeleted(): void
     {
-        $user = User::factory()->create();
+        $user   = User::factory()->create();
         $client = Client::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user, 'api')->deleteJson("/api/clients/{$client->id}");
@@ -59,7 +59,7 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenActivityIsCreated(): void
     {
-        $user = User::factory()->create();
+        $user   = User::factory()->create();
         $client = Client::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user, 'api')->postJson('/api/activities', [
@@ -77,8 +77,8 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenActivityIsUpdated(): void
     {
-        $user = User::factory()->create();
-        $client = Client::factory()->create(['user_id' => $user->id]);
+        $user     = User::factory()->create();
+        $client   = Client::factory()->create(['user_id' => $user->id]);
         $activity = Activity::factory()->create(['client_id' => $client->id, 'user_id' => $user->id]);
 
         $this->actingAs($user, 'api')->patchJson("/api/activities/{$activity->id}", [
@@ -93,8 +93,8 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenActivityIsDeleted(): void
     {
-        $user = User::factory()->create();
-        $client = Client::factory()->create(['user_id' => $user->id]);
+        $user     = User::factory()->create();
+        $client   = Client::factory()->create(['user_id' => $user->id]);
         $activity = Activity::factory()->create(['client_id' => $client->id, 'user_id' => $user->id]);
 
         $this->actingAs($user, 'api')->deleteJson("/api/activities/{$activity->id}");
@@ -107,7 +107,7 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenContactIsCreated(): void
     {
-        $user = User::factory()->create();
+        $user   = User::factory()->create();
         $client = Client::factory()->create(['user_id' => $user->id]);
 
         $this->actingAs($user, 'api')->postJson("/api/clients/{$client->id}/contacts", [
@@ -122,8 +122,8 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenContactIsUpdated(): void
     {
-        $user = User::factory()->create();
-        $client = Client::factory()->create(['user_id' => $user->id]);
+        $user    = User::factory()->create();
+        $client  = Client::factory()->create(['user_id' => $user->id]);
         $contact = Contact::factory()->create(['client_id' => $client->id]);
 
         $this->actingAs($user, 'api')->patchJson("/api/clients/{$client->id}/contacts/{$contact->id}", [
@@ -138,8 +138,8 @@ class ActivityLogTest extends TestCase
 
     public function testLogIsCreatedWhenContactIsDeleted(): void
     {
-        $user = User::factory()->create();
-        $client = Client::factory()->create(['user_id' => $user->id]);
+        $user    = User::factory()->create();
+        $client  = Client::factory()->create(['user_id' => $user->id]);
         $contact = Contact::factory()->create(['client_id' => $client->id]);
 
         $this->actingAs($user, 'api')->deleteJson("/api/clients/{$client->id}/contacts/{$contact->id}");
@@ -152,12 +152,14 @@ class ActivityLogTest extends TestCase
 
     public function testDashboardReturnsActivityChart(): void
     {
-        $user = User::factory()->create();
+        $user   = User::factory()->create();
+        $client = Client::factory()->create(['user_id' => $user->id]);
 
-        UserActivityLog::create([
-            'user_id'     => $user->id,
-            'action'      => 'client.created',
-            'occurred_at' => now(),
+        Activity::factory()->create([
+            'client_id'    => $client->id,
+            'user_id'      => $user->id,
+            'status'       => 'done',
+            'completed_at' => now(),
         ]);
 
         $response = $this->actingAs($user, 'api')->getJson('/api/dashboard');
@@ -165,7 +167,7 @@ class ActivityLogTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'activity_chart' => [
-                    '*' => ['date', 'count']
+                    '*' => ['month', 'count']
                 ]
             ]);
     }
