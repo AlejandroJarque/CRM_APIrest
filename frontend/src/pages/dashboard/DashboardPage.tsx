@@ -143,7 +143,7 @@ function DashboardPage() {
               >
                 <span className="activity-title">{activity.title}</span>
                 <div className="activity-meta">
-                  <span className="activity-date">{activity.date}</span>
+                  <span className="activity-date">{activity.date.split('T')[0]}</span>
                   <span className={STATUS_CLASS[activity.status] ?? 'badge'}>
                     {STATUS_LABEL[activity.status] ?? activity.status}
                   </span>
@@ -166,7 +166,7 @@ function DashboardPage() {
               >
                 <span className="activity-title">{activity.title}</span>
                 <div className="activity-meta">
-                  <span className="activity-date">{activity.date}</span>
+                  <span className="activity-date">{activity.date.split('T')[0]}</span>
                   <span className={STATUS_CLASS[activity.status] ?? 'badge'}>
                     {STATUS_LABEL[activity.status] ?? activity.status}
                   </span>

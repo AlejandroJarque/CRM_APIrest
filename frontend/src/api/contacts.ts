@@ -10,12 +10,22 @@ export async function getContact(clientId: number, id: number) {
   return response.data
 }
 
-export async function createContact(clientId: number, data: { name: string; email?: string; phone?: string }) {
+export async function createContact(clientId: number, data: {
+  name: string
+  email?: string
+  phone?: string
+  position?: string
+}) {
   const response = await apiClient.post(`/clients/${clientId}/contacts`, data)
   return response.data
 }
 
-export async function updateContact(clientId: number, id: number, data: { name?: string; email?: string; phone?: string }) {
+export async function updateContact(clientId: number, id: number, data: {
+  name?: string
+  email?: string
+  phone?: string
+  position?: string
+}) {
   const response = await apiClient.patch(`/clients/${clientId}/contacts/${id}`, data)
   return response.data
 }
