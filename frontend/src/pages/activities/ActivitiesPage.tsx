@@ -105,7 +105,7 @@ function ActivitiesPage() {
                         {STATUS_LABEL[activity.status] ?? activity.status}
                       </span>
                     </td>
-                    <td className="td-secondary">{activity.date}</td>
+                    <td className="td-secondary">{activity.date.split('T')[0]}</td>
                     <td>
                       <div className="row-actions">
                         <button
