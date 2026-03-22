@@ -1,22 +1,116 @@
-# CRM REST API
+# NEXORA CRM
 
-## Description
+A fullstack CRM (Customer Relationship Management) application built with Laravel and React. Designed to help teams manage clients, contacts, activities, and track business relationships in a clean and efficient way.
 
-This repository contains a RESTful CRM (Customer Relationship Management) API built with Laravel. The main purpose of the project is to provide a backend service that allows companies to manage their clients and the activities associated with them, while supporting secure user authentication and authorization.
+![Dashboard](screenshots/dashboard.png)
 
-The API is designed to be stateless, JSON-based, and easily consumable by web or mobile frontends. Each authenticated user can manage their own data, ensuring separation and security between company employees.
+## Live Demo
 
-## Project Overview
+| Service | URL |
+|---------|-----|
+| Frontend | https://nexora-frontend-ng73.onrender.com |
+| Backend API | https://crm-nexora.onrender.com |
+| API Docs | https://crm-nexora.onrender.com/swagger/index.html |
 
-The project is implemented as a Laravel application following REST and clean architecture principles. Instead of traditional server-rendered views, all interactions are performed through HTTP endpoints that return JSON responses.
+## Features
 
-Key goals of the project:
+- **Dashboard** — Key metrics at a glance: clients, activities, completed vs pending ratio, monthly chart and recent activity feed
+- **Clients** — Full CRUD with search and pagination
+- **Contacts** — Manage contacts associated to clients, with position, email and phone
+- **Activities** — Track tasks and interactions with clients, with status and date filtering
+- **Global Search** — Search across clients, contacts and activities from the topbar with debounced input and grouped results
+- **Role-based access** — Admin users see all records; regular users see only their own
+- **Light / Dark mode** — Theme toggle persisted across sessions
+- **API Documentation** — Swagger UI available in production
 
-* Centralize client information for a company
-* Track activities related to each client
-* Provide secure authentication for users
-* Expose a clear and versioned REST API
-* Maintain a clean, scalable, and testable codebase
+## Screenshots
+
+![Clients](screenshots/clients.png)
+![Activities](screenshots/activities.png)
+![Profile](screenshots/profile.png)
+![Welcome](screenshots/welcome.png)
+![Dashboard](screenshots/dashboardwhite.png)
+
+## Tech Stack
+
+### Backend
+| Technology | Purpose |
+|------------|---------|
+| Laravel 12 | PHP framework |
+| PHP 8.2 | Runtime |
+| Laravel Passport | OAuth2 authentication |
+| PostgreSQL | Production database |
+| MySQL 8.0 | Local development database |
+| PHPUnit | Testing (TDD) |
+| OpenAPI 3.0 | API documentation (Swagger UI) |
+
+### Frontend
+| Technology | Purpose |
+|------------|---------|
+| React 19 | UI framework |
+| TypeScript | Type safety |
+| Vite | Build tool |
+| React Router DOM v7 | Client-side routing |
+| Axios | HTTP client |
+| Recharts | Data visualization |
+
+### Infrastructure
+| Technology | Purpose |
+|------------|---------|
+| Docker + Nginx | Local development environment |
+| Render | Cloud deployment |
+| Git & GitHub | Version control and Gitflow |
+
+## Project Structure
+```
+nexora-crm/
+├── backend/                      # Laravel API
+│   ├── app/
+│   │   ├── Application/          # Services and use cases
+│   │   │   ├── Activities/
+│   │   │   ├── Clients/
+│   │   │   ├── Contacts/
+│   │   │   └── Dashboard/
+│   │   ├── Domain/               # Domain events
+│   │   ├── Http/
+│   │   │   ├── Controllers/
+│   │   │   │   └── Api/
+│   │   │   │       ├── Auth/
+│   │   │   │       └── V1/
+│   │   │   ├── Requests/
+│   │   │   └── Resources/
+│   │   └── Models/
+│   ├── database/
+│   │   ├── migrations/
+│   │   └── seeders/
+│   ├── public/
+│   │   ├── openapi.yaml
+│   │   └── swagger/
+│   ├── routes/
+│   │   └── api.php
+│   └── tests/
+│       └── Feature/
+├── frontend/                     # React SPA
+│   ├── src/
+│   │   ├── api/                  # Axios API calls
+│   │   ├── components/
+│   │   │   ├── GlobalSearch/
+│   │   │   └── layout/
+│   │   ├── context/              # Auth and Theme context
+│   │   ├── pages/
+│   │   │   ├── activities/
+│   │   │   ├── admin/
+│   │   │   ├── auth/
+│   │   │   ├── clients/
+│   │   │   ├── contacts/
+│   │   │   ├── dashboard/
+│   │   │   ├── profile/
+│   │   │   └── welcome/
+│   │   └── router/
+│   └── public/
+└── docs/
+    └── screenshots/
+```
 
 ## Architecture
 
@@ -78,128 +172,116 @@ Relationships:
 
 Migrations and seeders are provided to simplify setup and local development.
 
-## API Versioning
-
-All current endpoints are grouped under the base path:
-
-* Base path: `/api`
-
-Any change that breaks backward compatibility requires a new version.
-
 ## API Documentation
 
 Swagger UI is available at:
-```
-http://localhost:8080/swagger/index.html
-```
 
-The OpenAPI specification is located at `public/openapi.yaml`.
+* **Production**: https://crm-nexora.onrender.com/swagger/index.html
+* **Local**: http://localhost:8080/swagger/index.html
 
-## Mailing and Events
+The OpenAPI specification is located at `backend/public/openapi.yaml`.
 
-The project includes support for domain events and notifications:
+## Local Development
 
-* Domain events are triggered on relevant actions (e.g. client creation, activity registration)
-* The structure allows easy extension for email notifications or asynchronous processing
-* The system is ready to be integrated with external mailing services if required
+### Prerequisites
 
-## Technologies Used
-
-* Laravel 12
-* PHP 8.2
-* Composer
-* Laravel Passport
-* MySQL 8.0
-* Docker + Nginx
-* RESTful API principles
-* JSON
-* OpenAPI 3.0 (Swagger UI)
-* PHPUnit (TDD)
-* Git & GitHub
-* Visual Studio Code
-
-## Installation
+* Docker Desktop
+* Git
 
 ### With Docker (recommended)
 
 1. Clone the repository
 ```bash
-   git clone <repository-url>
-   cd crm-apirest
+git clone https://github.com/AlejandroJarque/CRM_APIrest.git
+cd CRM_APIrest
 ```
 
 2. Copy environment file
 ```bash
-   cp .env.docker .env
+cp backend/.env.docker backend/.env
 ```
 
 3. Start containers
 ```bash
-   docker compose up -d
+docker compose up -d
 ```
 
 4. Run migrations and seeders
 ```bash
-   docker exec crm_app php artisan migrate --seed
+docker exec crm_app php artisan migrate --seed
 ```
 
 5. Create Passport personal access client
 ```bash
-   docker exec crm_app php artisan passport:client --personal --no-interaction
+docker exec crm_app php artisan passport:client --personal --no-interaction
 ```
 
-API available at: `http://localhost:8080`
+Backend available at: `http://localhost:8080`  
+Frontend available at: `http://localhost:5173`  
+API Docs available at: `http://localhost:8080/swagger/index.html`
 
 ### Without Docker
 
+#### Backend
+
 1. Clone the repository
 ```bash
-   git clone <repository-url>
+git clone https://github.com/AlejandroJarque/CRM_APIrest.git
+cd CRM_APIrest/backend
 ```
 
 2. Install PHP dependencies
 ```bash
-   composer install
+composer install
 ```
 
-3. Copy environment configuration
+3. Copy environment configuration and generate key
 ```bash
-   cp .env.example .env
+cp .env.example .env
+php artisan key:generate
 ```
 
-4. Generate application key
+4. Configure database credentials in `.env`
+
+5. Run migrations and seeders
 ```bash
-   php artisan key:generate
+php artisan migrate --seed
+php artisan passport:client --personal --no-interaction
 ```
 
-5. Configure database credentials in `.env`
-
-6. Run migrations and seeders
+6. Start the development server
 ```bash
-   php artisan migrate --seed
+php artisan serve
 ```
 
-7. Create Passport personal access client
+#### Frontend
+
+1. Install dependencies
 ```bash
-   php artisan passport:client --personal --no-interaction
+cd frontend
+npm install
 ```
 
-8. Start the development server
+2. Copy environment file
 ```bash
-   php artisan serve
+cp .env.development .env
 ```
 
-### Environment Configuration (.env)
+3. Start the dev server
+```bash
+npm run dev
+```
 
-This project relies on environment-specific configuration. After copying
-.env.example to .env, the following variables must be properly configured.
+Frontend available at: `http://localhost:5173`
 
-Application
+## Environment Variables
+
+### Backend (.env)
+```env
 APP_ENV=local
 APP_DEBUG=true
-APP_URL=http://localhost:8000
+APP_URL=http://localhost:8080
 
-Database
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -207,43 +289,55 @@ DB_DATABASE=crm
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 
-Frontend (CORS)
 FRONTEND_URL=http://localhost:5173
-
-## Project Structure
 ```
-app/
- ├── Application/
- │   ├── Activities/
- │   ├── Clients/
- │   ├── Contacts/
- │   └── Dashboard/
- ├── Domain/
- │   └── Events/
- ├── Http/
- │   └── Controllers/
- │       └── Api/
- │           ├── Auth/
- │           └── V1/
- └── Models/
 
-database/
- ├── migrations/
- └── seeders/
+### Frontend (.env.development)
+```env
+VITE_API_URL=http://localhost:8080/api
+```
 
-public/
- ├── openapi.yaml
- └── swagger/
-     └── index.html
+## Deployment
 
-routes/
- └── api.php
+The application is deployed on [Render](https://render.com):
+
+* **Backend** — Web Service running a Docker container. On every deploy: migrations run automatically, Passport keys are generated, and the application cache is cleared.
+* **Frontend** — Static Site. Built with `npm run build` and served as a static bundle.
+
+### Production environment variables
+
+#### Backend
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://crm-nexora.onrender.com
+DB_CONNECTION=pgsql
+FRONTEND_URL=https://nexora-frontend-ng73.onrender.com
+```
+
+#### Frontend
+```env
+VITE_API_URL=/api
 ```
 
 ## Running Tests
 ```bash
 docker exec crm_app php artisan test
 ```
+
+Current test suite: **101 tests, 238 assertions**.
+
+## Git Workflow
+
+This project follows **Gitflow**:
+
+* `main` — production-ready code, tagged releases
+* `develop` — integration branch
+* `feature/*` — new features
+* `fix/*` — bug fixes
+* `release/*` — release preparation
+
+All commits follow conventional prefixes: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`.
 
 ## Development Notes
 
@@ -252,5 +346,13 @@ docker exec crm_app php artisan test
 * Domain events decouple side effects from core logic
 * The codebase follows Laravel and REST best practices
 * The project is designed to be easily extendable
+
+## Mailing and Events
+
+The project includes support for domain events and notifications:
+
+* Domain events are triggered on relevant actions (e.g. client creation, activity registration)
+* The structure allows easy extension for email notifications or asynchronous processing
+* The system is ready to be integrated with external mailing services if required
 
 
