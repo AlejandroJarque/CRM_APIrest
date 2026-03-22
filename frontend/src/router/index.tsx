@@ -4,7 +4,6 @@ import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 import DashboardPage from '../pages/dashboard/DashboardPage'
 import ClientsPage from '../pages/clients/ClientsPage'
-import ClientCreatePage from '../pages/clients/ClientCreatePage'
 import ClientEditPage from '../pages/clients/ClientEditPage'
 import ClientDetailPage from '../pages/clients/ClientDetailPage'
 import ContactsPage from '../pages/contacts/ContactsPage'
@@ -42,11 +41,7 @@ function Router() {
             <ClientsPage />
           </ProtectedRoute>
         } />
-        <Route path="/clients/create" element={
-          <ProtectedRoute title="New client">
-            <ClientCreatePage />
-          </ProtectedRoute>
-        } />
+        
         <Route path="/clients/:id/edit" element={
           <ProtectedRoute title="Edit client">
             <ClientEditPage />
