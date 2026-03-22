@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getActivities, deleteActivity } from '../../api/activities'
+import CreateActivityModal from '../../components/CreateActivityModal/CreateActivityModal'
 import './ActivitiesPage.css'
 import '../clients/ClientsPage.css'
 
@@ -23,13 +24,13 @@ interface Meta {
 const STATUS_LABEL: Record<string, string> = {
   pending:     'Pending',
   in_progress: 'In progress',
-  done:   'Completed',
+  done:        'Completed',
 }
 
 const STATUS_CLASS: Record<string, string> = {
   pending:     'badge badge--pending',
   in_progress: 'badge badge--progress',
-  done:   'badge badge--done',
+  done:        'badge badge--done',
 }
 
 function ActivitiesPage() {
@@ -38,6 +39,7 @@ function ActivitiesPage() {
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
   const navigate = useNavigate()
 
@@ -57,9 +59,22 @@ function ActivitiesPage() {
     try {
       await deleteActivity(id)
       setActivities(activities.filter((a) => a.id !== id))
+      if (meta) setMeta({ ...meta, total: meta.total - 1 })
     } catch {
       alert('Error deleting activity')
     }
+  }
+
+  function handleCreated() {
+    setShowModal(false)
+    setPage(1)
+    setLoading(true)
+    getActivities(1)
+      .then((response) => {
+        setActivities(response.data)
+        setMeta(response.meta)
+      })
+      .finally(() => setLoading(false))
   }
 
   if (loading) return <div className="loading">Loading...</div>
@@ -72,7 +87,7 @@ function ActivitiesPage() {
           <h1 className="page-title">Activities</h1>
           <span className="count-pill">{meta?.total ?? activities.length}</span>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/activities/create')}>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           New activity
         </button>
       </div>
@@ -80,7 +95,7 @@ function ActivitiesPage() {
       {activities.length === 0 ? (
         <div className="empty-state">
           <span>No activities yet</span>
-          <button className="btn btn-primary" onClick={() => navigate('/activities/create')}>
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
             Create first activity
           </button>
         </div>
@@ -156,6 +171,13 @@ function ActivitiesPage() {
             </div>
           )}
         </>
+      )}
+
+      {showModal && (
+        <CreateActivityModal
+          onClose={() => setShowModal(false)}
+          onCreated={handleCreated}
+        />
       )}
     </div>
   )
