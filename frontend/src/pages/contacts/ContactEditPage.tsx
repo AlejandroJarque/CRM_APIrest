@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getContact, updateContact } from '../../api/contacts'
 import '../clients/ClientCreatePage.css'
 
@@ -13,6 +13,12 @@ function ContactEditPage() {
 
   const navigate = useNavigate()
   const { clientId, id } = useParams()
+  const [searchParams] = useSearchParams()
+  const from = searchParams.get('from')
+
+  function goBack() {
+    navigate(from === 'contacts' ? '/contacts' : `/clients/${clientId}/contacts`)
+  }
 
   useEffect(() => {
     getContact(Number(clientId), Number(id))
@@ -34,7 +40,7 @@ function ContactEditPage() {
 
     try {
       await updateContact(Number(clientId), Number(id), { name, email, phone, position })
-      navigate(`/clients/${clientId}/contacts`)
+      goBack()
     } catch {
       setError('Error updating contact')
     } finally {
@@ -49,10 +55,7 @@ function ContactEditPage() {
     <div className="page">
       <div className="page-header">
         <div className="page-title-group">
-          <button
-            className="btn btn-ghost btn-sm"
-            onClick={() => navigate(`/clients/${clientId}/contacts`)}
-          >
+          <button className="btn btn-ghost btn-sm" onClick={goBack}>
             ← Back
           </button>
           <h1 className="page-title">Edit contact</h1>
@@ -75,7 +78,6 @@ function ContactEditPage() {
                 required
               />
             </div>
-
             <div className="input-group">
               <label className="input-label">Position</label>
               <input
@@ -99,7 +101,6 @@ function ContactEditPage() {
                 placeholder="email@example.com"
               />
             </div>
-
             <div className="input-group">
               <label className="input-label">Phone</label>
               <input
@@ -113,18 +114,10 @@ function ContactEditPage() {
           </div>
 
           <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => navigate(`/clients/${clientId}/contacts`)}
-            >
+            <button type="button" className="btn btn-ghost" onClick={goBack}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
+            <button type="submit" className="btn btn-primary" disabled={loading}>
               {loading ? 'Saving...' : 'Save changes'}
             </button>
           </div>

@@ -8,7 +8,6 @@ import ClientCreatePage from '../pages/clients/ClientCreatePage'
 import ClientEditPage from '../pages/clients/ClientEditPage'
 import ClientDetailPage from '../pages/clients/ClientDetailPage'
 import ContactsPage from '../pages/contacts/ContactsPage'
-import ContactCreatePage from '../pages/contacts/ContactCreatePage'
 import ContactEditPage from '../pages/contacts/ContactEditPage'
 import ActivitiesPage from '../pages/activities/ActivitiesPage'
 import ActivityCreatePage from '../pages/activities/ActivityCreatePage'
@@ -64,11 +63,7 @@ function Router() {
             <ContactsPage />
           </ProtectedRoute>
         } />
-        <Route path="/clients/:clientId/contacts/create" element={
-          <ProtectedRoute title="New contact">
-            <ContactCreatePage />
-          </ProtectedRoute>
-        } />
+        
         <Route path="/clients/:clientId/contacts/:id/edit" element={
           <ProtectedRoute title="Edit contact">
             <ContactEditPage />
