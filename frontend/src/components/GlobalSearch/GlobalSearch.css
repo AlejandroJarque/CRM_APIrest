@@ -1,6 +1,7 @@
 .gsearch {
   position: relative;
   width: 260px;
+  margin-right: 20px;
 }
 
 .gsearch-input-wrap {
@@ -127,3 +128,4 @@
   color: var(--text-3);
   flex-shrink: 0;
 }
+
