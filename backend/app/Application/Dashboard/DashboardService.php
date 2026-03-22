@@ -34,9 +34,11 @@ class DashboardService
 
         $driver = DB::connection()->getDriverName();
 
-        $monthExpression = $driver === 'sqlite'
-            ? DB::raw("strftime('%Y-%m', completed_at) as month")
-            : DB::raw("DATE_FORMAT(completed_at, '%Y-%m') as month");
+        $monthExpression = match($driver) {
+            'sqlite'  => DB::raw("strftime('%Y-%m', completed_at) as month"),
+            'pgsql'   => DB::raw("TO_CHAR(completed_at, 'YYYY-MM') as month"),
+            default   => DB::raw("DATE_FORMAT(completed_at, '%Y-%m') as month"),
+        };
 
         $activityChart = (clone $activitiesQuery)
             ->whereNotNull('completed_at')
