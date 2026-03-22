@@ -7,6 +7,7 @@ function ContactEditPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [position, setPosition] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -20,6 +21,7 @@ function ContactEditPage() {
         setName(contact.name)
         setEmail(contact.email ?? '')
         setPhone(contact.phone ?? '')
+        setPosition(contact.position ?? '')
       })
       .catch(() => setError('Error loading contact'))
       .finally(() => setLoading(false))
@@ -31,7 +33,7 @@ function ContactEditPage() {
     setLoading(true)
 
     try {
-      await updateContact(Number(clientId), Number(id), { name, email, phone })
+      await updateContact(Number(clientId), Number(id), { name, email, phone, position })
       navigate(`/clients/${clientId}/contacts`)
     } catch {
       setError('Error updating contact')
@@ -61,38 +63,53 @@ function ContactEditPage() {
         {error && <div className="auth-error">{error}</div>}
 
         <form className="form-card" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label className="input-label">Name</label>
-            <input
-              className="input"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Contact name"
-              required
-            />
+          <div className="form-row">
+            <div className="input-group">
+              <label className="input-label">Name</label>
+              <input
+                className="input"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Contact name"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Position</label>
+              <input
+                className="input"
+                type="text"
+                value={position}
+                onChange={(e) => setPosition(e.target.value)}
+                placeholder="CEO, Developer..."
+              />
+            </div>
           </div>
 
-          <div className="input-group">
-            <label className="input-label">Email</label>
-            <input
-              className="input"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="email@example.com"
-            />
-          </div>
+          <div className="form-row">
+            <div className="input-group">
+              <label className="input-label">Email</label>
+              <input
+                className="input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+              />
+            </div>
 
-          <div className="input-group">
-            <label className="input-label">Phone</label>
-            <input
-              className="input"
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+34 600 000 000"
-            />
+            <div className="input-group">
+              <label className="input-label">Phone</label>
+              <input
+                className="input"
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+34 600 000 000"
+              />
+            </div>
           </div>
 
           <div className="form-actions">
