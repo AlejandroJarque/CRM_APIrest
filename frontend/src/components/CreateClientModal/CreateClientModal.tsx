@@ -1,26 +1,35 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { createClient } from '../../api/clients'
-import './ClientCreatePage.css'
+import '../CreateContactModal/CreateContactModal.css'
 
-function ClientCreatePage() {
+interface Props {
+  onClose: () => void
+  onCreated: () => void
+}
+
+export default function CreateClientModal({ onClose, onCreated }: Props) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
-  const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
     setLoading(true)
-
     try {
       await createClient({ name, email, phone, address })
-      navigate('/clients')
+      onCreated()
     } catch {
       setError('Error creating client')
     } finally {
@@ -29,20 +38,16 @@ function ClientCreatePage() {
   }
 
   return (
-    <div className="page">
-      <div className="page-header">
-        <div className="page-title-group">
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/clients')}>
-            ← Back
-          </button>
-          <h1 className="page-title">New client</h1>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title">New client</h2>
+          <button className="modal-close" onClick={onClose}>✕</button>
         </div>
-      </div>
 
-      <div className="form-body">
         {error && <div className="auth-error">{error}</div>}
 
-        <form className="form-card" onSubmit={handleSubmit}>
+        <form className="modal-form" onSubmit={handleSubmit}>
           <div className="input-group">
             <label className="input-label">Name</label>
             <input
@@ -67,7 +72,6 @@ function ClientCreatePage() {
                 required
               />
             </div>
-
             <div className="input-group">
               <label className="input-label">Phone</label>
               <input
@@ -91,20 +95,12 @@ function ClientCreatePage() {
             />
           </div>
 
-          <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => navigate('/clients')}
-            >
+          <div className="modal-actions">
+            <button type="button" className="btn btn-ghost" onClick={onClose}>
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Create Client'}
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Saving...' : 'Create client'}
             </button>
           </div>
         </form>
@@ -112,5 +108,3 @@ function ClientCreatePage() {
     </div>
   )
 }
-
-export default ClientCreatePage
