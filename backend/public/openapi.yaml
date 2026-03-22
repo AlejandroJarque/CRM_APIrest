@@ -44,6 +44,8 @@ tags:
     description: Activity management endpoints.
   - name: Dashboard
     description: Dashboard summary endpoint.
+  - name: Search
+    description: Global search endpoint.
 
 components:
   securitySchemes:
@@ -1538,6 +1540,60 @@ paths:
                               status: { type: string, example: "pending" }
         "401":
           description: Unauthorized - authentication token is missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /search:
+    get:
+      summary: Global search
+      description: >
+        Searches across clients, contacts and activities using a query string.
+        Results are grouped by resource type and limited to 5 per group.
+        Respects ownership rules — users see only their own records, admins see all.
+        Returns empty arrays if the query parameter is missing or blank.
+      tags: [Search]
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema: { type: string }
+          example: "acme"
+          description: Search term. Matched using LIKE against name/title fields.
+      responses:
+        "200":
+          description: Search results grouped by resource type
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  clients:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer, example: 1 }
+                        name: { type: string, example: "Acme Corp" }
+                  contacts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer, example: 1 }
+                        name: { type: string, example: "Jaki Riggs" }
+                        client_id: { type: integer, example: 1 }
+                  activities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: integer, example: 1 }
+                        title: { type: string, example: "Follow up call" }
+                        status: { type: string, example: "pending" }
+        "401":
+          description: Unauthorized
           content:
             application/json:
               schema:
