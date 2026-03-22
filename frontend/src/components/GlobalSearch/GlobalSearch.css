@@ -1,0 +1,129 @@
+.gsearch {
+  position: relative;
+  width: 260px;
+}
+
+.gsearch-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  height: 32px;
+  transition: border-color var(--transition);
+}
+
+.gsearch-input-wrap:focus-within {
+  border-color: var(--border-focus);
+}
+
+.gsearch-icon {
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.gsearch-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  color: var(--text-1);
+  min-width: 0;
+}
+
+.gsearch-input::placeholder {
+  color: var(--text-3);
+}
+
+.gsearch-spinner {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: gspin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes gspin {
+  to { transform: rotate(360deg); }
+}
+
+.gsearch-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+  min-width: 300px;
+}
+
+.gsearch-empty {
+  padding: 14px 16px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.gsearch-group {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.gsearch-group:last-child {
+  border-bottom: none;
+}
+
+.gsearch-group-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  padding: 4px 12px 6px;
+}
+
+.gsearch-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition);
+}
+
+.gsearch-item:hover {
+  background: var(--bg-hover);
+}
+
+.gsearch-item-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.gsearch-item-name {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gsearch-item-status {
+  font-size: 11px;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
