@@ -83,7 +83,7 @@ export default function GlobalSearch() {
           ref={inputRef}
           className="gsearch-input"
           type="text"
-          placeholder="Search..."
+          placeholder="Search clients, acticities, contacts..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => { if (results) setOpen(true) }}
