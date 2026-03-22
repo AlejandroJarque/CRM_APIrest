@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { login as loginApi } from '../../api/auth'
@@ -12,6 +12,16 @@ function LoginPage() {
 
   const { login } = useAuth()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    document.documentElement.removeAttribute('data-theme')
+    return () => {
+      const saved = localStorage.getItem('nexora-theme')
+      if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light')
+      }
+    }
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

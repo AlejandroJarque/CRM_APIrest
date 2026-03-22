@@ -1,8 +1,19 @@
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './WelcomePage.css'
 
 function WelcomePage() {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    document.documentElement.removeAttribute('data-theme')
+    return () => {
+      const saved = localStorage.getItem('nexora-theme')
+      if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light')
+      }
+    }
+  }, [])
 
   return (
     <div className="welcome">
