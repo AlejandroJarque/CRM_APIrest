@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\SearchController;
 
 // Auth (public)
 Route::post('/login', LoginController::class);
@@ -41,4 +42,7 @@ Route::middleware('auth:api')->group(function() {
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    // Search
+    Route::get('/search', SearchController::class);
 });

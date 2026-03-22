@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
+import GlobalSearch from '../GlobalSearch/GlobalSearch'
 import './AppLayout.css'
 
 interface NavItem {
@@ -138,9 +139,8 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
       <div className="app-main">
         <header className="topbar">
           <span className="topbar-title">{title}</span>
-          {actions && (
-            <div className="topbar-actions">{actions}</div>
-          )}
+          <GlobalSearch />
+          {actions && <div className="topbar-actions">{actions}</div>}
         </header>
 
         <main className="app-content">
