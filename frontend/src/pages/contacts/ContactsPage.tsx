@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getContacts, deleteContact } from '../../api/contacts'
+import CreateContactModal from '../../components/CreateContactModal/CreateContactModal'
 import '../clients/ClientsPage.css'
 
 interface Contact {
@@ -9,12 +10,14 @@ interface Contact {
   name: string
   email: string
   phone: string
+  position: string
 }
 
 function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showModal, setShowModal] = useState(false)
 
   const navigate = useNavigate()
   const { clientId } = useParams()
@@ -36,6 +39,14 @@ function ContactsPage() {
     }
   }
 
+  function handleCreated() {
+    setShowModal(false)
+    setLoading(true)
+    getContacts(Number(clientId))
+      .then((response) => setContacts(response.data))
+      .finally(() => setLoading(false))
+  }
+
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
 
@@ -52,10 +63,7 @@ function ContactsPage() {
           <h1 className="page-title">Contacts</h1>
           <span className="count-pill">{contacts.length}</span>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={() => navigate(`/clients/${clientId}/contacts/create`)}
-        >
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           New contact
         </button>
       </div>
@@ -63,10 +71,7 @@ function ContactsPage() {
       {contacts.length === 0 ? (
         <div className="empty-state">
           <span>No contacts for this client</span>
-          <button
-            className="btn btn-primary"
-            onClick={() => navigate(`/clients/${clientId}/contacts/create`)}
-          >
+          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
             Create first contact
           </button>
         </div>
@@ -76,6 +81,7 @@ function ContactsPage() {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Position</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Actions</th>
@@ -85,8 +91,9 @@ function ContactsPage() {
               {contacts.map((contact) => (
                 <tr key={contact.id}>
                   <td className="td-name">{contact.name}</td>
-                  <td className="td-secondary">{contact.email}</td>
-                  <td className="td-secondary">{contact.phone}</td>
+                  <td className="td-secondary">{contact.position ?? '—'}</td>
+                  <td className="td-secondary">{contact.email ?? '—'}</td>
+                  <td className="td-secondary">{contact.phone ?? '—'}</td>
                   <td>
                     <div className="row-actions">
                       <button
@@ -108,6 +115,14 @@ function ContactsPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {showModal && (
+        <CreateContactModal
+          onClose={() => setShowModal(false)}
+          onCreated={handleCreated}
+          defaultClientId={Number(clientId)}
+        />
       )}
     </div>
   )
