@@ -13,6 +13,7 @@ export async function getActivity(id: number) {
 export async function createActivity(data: {
   title: string
   description?: string
+  type: string
   status?: string
   date: string
   client_id: number
@@ -25,6 +26,7 @@ export async function createActivity(data: {
 export async function updateActivity(id: number, data: {
   title?: string
   description?: string
+  type: string
   status?: string
   date?: string
 }) {

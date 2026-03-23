@@ -5,6 +5,7 @@ import '../clients/ClientCreatePage.css'
 
 function ActivityEditPage() {
   const [title, setTitle] = useState('')
+  const [type, setType] = useState('call')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState('pending')
   const [date, setDate] = useState('')
@@ -21,6 +22,7 @@ function ActivityEditPage() {
       .then((response) => {
         const activity = response.data
         setTitle(activity.title)
+        setType(activity.type)
         setDescription(activity.description ?? '')
         setStatus(activity.status)
         setDate(activity.date.split('T')[0])
@@ -35,7 +37,7 @@ function ActivityEditPage() {
     setLoadingSubmit(true)
 
     try {
-      await updateActivity(Number(id), { title, description, status, date })
+      await updateActivity(Number(id), { title, type, description, status, date })
       navigate('/activities')
     } catch {
       setError('Error updating activity')
@@ -87,6 +89,20 @@ function ActivityEditPage() {
 
           <div className="form-row">
             <div className="input-group">
+              <label className="input-label">Type</label>
+              <select
+                className="input"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option value="call">Call</option>
+                <option value="email">Email</option>
+                <option value="meeting">Meeting</option>
+                <option value="demo">Demo</option>
+                <option value="proposal">Proposal</option>
+              </select>
+            </div>
+            <div className="input-group">
               <label className="input-label">Status</label>
               <select
                 className="input"
@@ -98,17 +114,17 @@ function ActivityEditPage() {
                 <option value="done">Completed</option>
               </select>
             </div>
+          </div>
 
-            <div className="input-group">
-              <label className="input-label">Date</label>
-              <input
-                className="input"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+          <div className="input-group">
+            <label className="input-label">Date</label>
+            <input
+              className="input"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-actions">

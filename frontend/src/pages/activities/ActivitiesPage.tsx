@@ -10,6 +10,7 @@ interface Activity {
   client_id: number
   title: string
   description: string
+  type: string
   status: string
   date: string
 }
@@ -31,6 +32,14 @@ const STATUS_CLASS: Record<string, string> = {
   pending:     'badge badge--pending',
   in_progress: 'badge badge--progress',
   done:        'badge badge--done',
+}
+
+const TYPE_LABEL: Record<string, string> = {
+  call:     'Call',
+  email:    'Email',
+  meeting:  'Meeting',
+  demo:     'Demo',
+  proposal: 'Proposal',
 }
 
 function ActivitiesPage() {
@@ -106,6 +115,7 @@ function ActivitiesPage() {
               <thead>
                 <tr>
                   <th>Title</th>
+                  <th>Type</th>
                   <th>Status</th>
                   <th>Date</th>
                   <th>Actions</th>
@@ -115,6 +125,7 @@ function ActivitiesPage() {
                 {activities.map((activity) => (
                   <tr key={activity.id}>
                     <td className="td-name">{activity.title}</td>
+                    <td className="td-secondary">{TYPE_LABEL[activity.type] ?? activity.type}</td>
                     <td>
                       <span className={STATUS_CLASS[activity.status] ?? 'badge'}>
                         {STATUS_LABEL[activity.status] ?? activity.status}
