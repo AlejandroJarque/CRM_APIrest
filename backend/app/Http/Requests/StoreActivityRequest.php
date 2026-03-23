@@ -21,6 +21,7 @@ class StoreActivityRequest extends FormRequest
             'contact_id' => ['nullable', 'exists:contacts,id'],
             'title' => ['required', 'string', 'min:1'],
             'status' => ['required', 'in:' . implode(',', Activity::STATUSES)],
+            'type' => ['required', 'in:' . implode(',', Activity::TYPES)],
             'date' => ['required', 'date'],
             'description' => ['nullable', 'string'],
         ];

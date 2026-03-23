@@ -66,6 +66,7 @@ class ActivityLogTest extends TestCase
             'client_id' => $client->id,
             'title'     => 'Follow up',
             'status'    => 'pending',
+            'type'      => 'call',
             'date'      => now()->toDateString(),
         ]);
 

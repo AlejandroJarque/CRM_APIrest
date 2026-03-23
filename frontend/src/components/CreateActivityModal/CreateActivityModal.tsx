@@ -18,6 +18,7 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
   const [clientId, setClientId] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [type, setType] = useState('call')
   const [status, setStatus] = useState('pending')
   const [date, setDate] = useState('')
   const [loading, setLoading] = useState(false)
@@ -47,6 +48,7 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
       await createActivity({
         title,
         description,
+        type,
         status,
         date,
         client_id: Number(clientId),
@@ -95,6 +97,20 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
 
           <div className="form-row">
             <div className="input-group">
+              <label className="input-label">Type</label>
+              <select
+                className="select"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option value="call">Call</option>
+                <option value="email">Email</option>
+                <option value="meeting">Meeting</option>
+                <option value="demo">Demo</option>
+                <option value="proposal">Proposal</option>
+              </select>
+            </div>
+            <div className="input-group">
               <label className="input-label">Status</label>
               <select
                 className="select"
@@ -106,16 +122,17 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
                 <option value="done">Completed</option>
               </select>
             </div>
-            <div className="input-group">
-              <label className="input-label">Date</label>
-              <input
-                className="input"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Date</label>
+            <input
+              className="input"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
           </div>
 
           <div className="input-group">
