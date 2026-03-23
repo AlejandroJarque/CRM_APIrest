@@ -20,6 +20,7 @@ class ActivityFactory extends Factory
             },
             'title' => fake()->sentence(3),
             'status' => Activity::STATUS_PENDING,
+            'type' => fake()->randomElement(Activity::TYPES),
             'date' => now()->toDateString(),
             'description' => fake()->sentence(),
         ];

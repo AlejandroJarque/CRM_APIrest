@@ -61,6 +61,7 @@ class ActivityTest extends TestCase
             'client_id' => $client->id,
             'title' => 'Follow up call',
             'status' => 'pending',
+            'type' => 'call',
             'date' => now()->toDateString(),
         ]);
 
@@ -81,6 +82,7 @@ class ActivityTest extends TestCase
             'client_id' => $otherClient->id,
             'title' => 'Follow up call',
             'status' => 'pending',
+            'type' => 'call',
             'date' => now()->toDateString(),
         ]);
 
@@ -125,6 +127,7 @@ class ActivityTest extends TestCase
             'client_id' => $client->id,
             'title' => 'Follow up call',
             'status' => 'pending',
+            'type' => 'call',
             'date' => now()->toDateString(),
             'user_id' => 999,
         ]);
@@ -145,6 +148,7 @@ class ActivityTest extends TestCase
             'client_id' => $client->id,
             'title' => 'Follow up call',
             'status' => 'done',
+            'type' => 'call',
             'date' => now()->toDateString(),
         ]);
 

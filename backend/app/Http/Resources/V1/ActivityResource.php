@@ -16,6 +16,7 @@ class ActivityResource extends JsonResource
             'contact_id' => $this->contact_id,
             'title' => $this->title,
             'status' => $this->status,
+            'type' => $this->type,
             'date' => $this->date,
             'description' => $this->description,
             'completed_at' => $this->completed_at,

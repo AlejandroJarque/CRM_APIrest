@@ -631,6 +631,7 @@ components:
           properties:
             id: { type: integer, example: 1 }
             title: { type: string, example: "Llamada de seguimiento" }
+            type: { type: string, enum: [call, email, meeting, demo, proposal], example: call }
             status: { type: string, enum: [pending, in_progress, done], example: pending }
             date: { type: string, format: date, example: "2026-03-15" }
             description: { type: string, example: "Llamar al cliente para seguimiento" }
@@ -648,6 +649,7 @@ components:
             properties:
               id: { type: integer, example: 1 }
               title: { type: string, example: "Llamada de seguimiento" }
+              type: { type: string, enum: [call, email, meeting, demo, proposal], example: call }
               status: { type: string, enum: [pending, in_progress, done], example: pending }
               date: { type: string, format: date, example: "2026-03-15" }
               description: { type: string, example: "Llamar al cliente para seguimiento" }
@@ -660,6 +662,7 @@ components:
       required: [title, status, date, client_id]
       properties:
         title: { type: string, example: "Llamada de seguimiento" }
+        type: { type: string, enum: [call, email, meeting, demo, proposal], example: call }
         status: { type: string, enum: [pending, in_progress, done], example: pending }
         date: { type: string, format: date, example: "2026-03-15" }
         description: { type: string, example: "Llamar al cliente para seguimiento" }
