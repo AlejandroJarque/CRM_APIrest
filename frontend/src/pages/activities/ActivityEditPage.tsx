@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getActivity, updateActivity } from '../../api/activities'
+import { getContacts } from '../../api/contacts'
 import '../clients/ClientCreatePage.css'
+
+interface Contact {
+  id: number
+  name: string
+}
 
 function ActivityEditPage() {
   const [title, setTitle] = useState('')
   const [type, setType] = useState('call')
   const [description, setDescription] = useState('')
   const [status, setStatus] = useState('pending')
+  const [contacts, setContacts] = useState<Contact[]>([])
+  const [contactId, setContactId] = useState('')
   const [date, setDate] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loadingInitial, setLoadingInitial] = useState(true)
@@ -26,7 +34,10 @@ function ActivityEditPage() {
         setDescription(activity.description ?? '')
         setStatus(activity.status)
         setDate(activity.date.split('T')[0])
+        setContactId(activity.contact_id ? String(activity.contact_id) : '')
+        return getContacts(activity.client_id)
       })
+      .then((response) => setContacts(response.data))
       .catch(() => setLoadError('Error loading activity'))
       .finally(() => setLoadingInitial(false))
   }, [id])
@@ -37,7 +48,7 @@ function ActivityEditPage() {
     setLoadingSubmit(true)
 
     try {
-      await updateActivity(Number(id), { title, type, description, status, date })
+      await updateActivity(Number(id), { title, type, description, status, date, contact_id: contactId ? Number(contactId) : undefined })
       navigate('/activities')
     } catch {
       setError('Error updating activity')
@@ -126,6 +137,24 @@ function ActivityEditPage() {
               required
             />
           </div>
+
+          {contacts.length > 0 && (
+            <div className="input-group">
+              <label className="input-label">Contact <span className="input-hint">(optional)</span></label>
+              <select
+                className="input"
+                value={contactId}
+                onChange={(e) => setContactId(e.target.value)}
+              >
+                <option value="">No specific contact</option>
+                {contacts.map((contact) => (
+                  <option key={contact.id} value={contact.id}>
+                    {contact.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="form-actions">
             <button

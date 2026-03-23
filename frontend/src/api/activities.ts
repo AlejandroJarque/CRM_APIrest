@@ -29,6 +29,7 @@ export async function updateActivity(id: number, data: {
   type: string
   status?: string
   date?: string
+  contact_id?: number
 }) {
   const response = await apiClient.patch(`/activities/${id}`, data)
   return response.data
