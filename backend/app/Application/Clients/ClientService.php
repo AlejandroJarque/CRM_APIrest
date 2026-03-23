@@ -21,7 +21,7 @@ class ClientService
             $query->where('name', 'like', '%' . $filters['name'] . '%');
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate(7);
+        return $query->orderBy('created_at', 'desc')->paginate(6);
     }
 
     public function createFor(User $user, array $data): Client
