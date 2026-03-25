@@ -18,6 +18,7 @@ class ClientFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'phone' => fake()->phoneNumber(),
             'address' => fake()->address(),
+            'status'  => fake()->randomElement(Client::STATUSES),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateClientRequest extends FormRequest
@@ -20,6 +21,7 @@ class UpdateClientRequest extends FormRequest
             'email' => ['sometimes', 'email'],
             'phone' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
+            'status'  => ['sometimes', 'in:' . implode(',', Client::STATUSES)],
         ];
     }
 }

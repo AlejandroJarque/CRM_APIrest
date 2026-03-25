@@ -545,6 +545,7 @@ components:
             phone: { type: string, example: "666111222" }
             address: { type: string, example: "Calle Mayor 1, Valencia" }
             user_id: { type: integer, example: 1 }
+            status: { type: string, enum: [lead, active, inactive, lost], example: lead }
 
     ClientCollection:
       type: object
@@ -569,6 +570,7 @@ components:
         email: { type: string, format: email, example: "empresa@test.com" }
         phone: { type: string, example: "666111222" }
         address: { type: string, example: "Calle Mayor 1, Valencia" }
+        status: { type: string, enum: [lead, active, inactive, lost], example: lead }
 
     ClientUpdateRequest:
       type: object
@@ -577,6 +579,7 @@ components:
         email: { type: string, format: email, example: "empresa@test.com" }
         phone: { type: string, example: "666111222" }
         address: { type: string, example: "Calle Mayor 1, Valencia" }
+        status: { type: string, enum: [lead, active, inactive, lost], example: lead }
 
     ContactResource:
       type: object

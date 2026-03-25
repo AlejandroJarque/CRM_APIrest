@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Client;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreClientRequest extends FormRequest
@@ -20,6 +21,7 @@ class StoreClientRequest extends FormRequest
             'email' => ['required', 'email'],
             'phone' => ['nullable', 'string'],
             'address' => ['nullable', 'string'],
+            'status'  => ['sometimes', 'in:' . implode(',', Client::STATUSES)],
         ];
     }
 }

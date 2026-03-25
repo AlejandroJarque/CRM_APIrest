@@ -16,6 +16,7 @@ class ClientResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
+            'status'     => $this->status,
             'user_id' => $this->user_id,
             'created_at' => $this->created_at,
         ];
