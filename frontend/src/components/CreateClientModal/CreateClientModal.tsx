@@ -14,6 +14,7 @@ export default function CreateClientModal({ onClose, onCreated }: Props) {
   const [address, setAddress] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState('lead')
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -28,7 +29,7 @@ export default function CreateClientModal({ onClose, onCreated }: Props) {
     setError(null)
     setLoading(true)
     try {
-      await createClient({ name, email, phone, address })
+      await createClient({ name, email, phone, address, status })
       onCreated()
     } catch {
       setError('Error creating client')
@@ -93,6 +94,20 @@ export default function CreateClientModal({ onClose, onCreated }: Props) {
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Street, city..."
             />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Status</label>
+            <select
+              className="select"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="lead">Lead</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="lost">Lost</option>
+            </select>
           </div>
 
           <div className="modal-actions">
