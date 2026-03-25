@@ -10,6 +10,7 @@ interface Client {
   email: string
   phone: string
   address: string
+  status: string
 }
 
 interface Meta {
@@ -35,6 +36,20 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
+const STATUS_LABEL: Record<string, string> = {
+  lead:     'Lead',
+  active:   'Active',
+  inactive: 'Inactive',
+  lost:     'Lost',
+}
+
+const STATUS_CLASS: Record<string, string> = {
+  lead:     'badge badge--progress',
+  active:   'badge badge--done',
+  inactive: 'badge badge--pending',
+  lost:     'badge badge--error',
+}
+
 function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([])
   const [meta, setMeta] = useState<Meta | null>(null)
@@ -43,17 +58,18 @@ function ClientsPage() {
   const [error, setError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
   const navigate = useNavigate()
+  const [statusFilter, setStatusFilter] = useState('')
 
   useEffect(() => {
     setLoading(true)
-    getClients(page)
+    getClients(page, statusFilter || undefined)
       .then((response) => {
         setClients(response.data)
         setMeta(response.meta)
       })
       .catch(() => setError('Error loading clients'))
       .finally(() => setLoading(false))
-  }, [page])
+  }, [page, statusFilter])
 
   async function handleDelete(id: number) {
     if (!confirm('Are you sure you want to delete this client?')) return
@@ -70,7 +86,7 @@ function ClientsPage() {
     setShowModal(false)
     setPage(1)
     setLoading(true)
-    getClients(1)
+    getClients(1, statusFilter || undefined)
       .then((response) => {
         setClients(response.data)
         setMeta(response.meta)
@@ -88,6 +104,18 @@ function ClientsPage() {
           <h1 className="page-title">Clients</h1>
           <span className="count-pill">{meta?.total ?? clients.length}</span>
         </div>
+        <select
+          className="select"
+          value={statusFilter}
+          onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
+          style={{ width: 'auto' }}
+        >
+          <option value="">All statuses</option>
+          <option value="lead">Lead</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="lost">Lost</option>
+        </select>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           New client
         </button>
@@ -113,6 +141,9 @@ function ClientsPage() {
                     </div>
                     <div className="client-card-info">
                       <span className="client-card-name">{client.name}</span>
+                      <span className={STATUS_CLASS[client.status] ?? 'badge'}>
+                        {STATUS_LABEL[client.status] ?? client.status}
+                      </span>
                       {client.address && (
                         <span className="client-card-address">{client.address}</span>
                       )}
