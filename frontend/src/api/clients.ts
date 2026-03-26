@@ -36,3 +36,8 @@ export async function deleteClient(id: number) {
   const response = await apiClient.delete(`/clients/${id}`)
   return response.data
 }
+
+export async function getClientStats(id: number) {
+  const response = await apiClient.get(`/clients/${id}/stats`)
+  return response.data
+}
