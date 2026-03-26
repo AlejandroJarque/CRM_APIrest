@@ -3,6 +3,7 @@
 namespace Tests\Feature\Clients;
 
 use App\Models\Client;
+use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -205,5 +206,45 @@ class ClientTest  extends TestCase
 
         $response->assertStatus(200);
         $this->assertCount(1, $response->json('data'));
+    }
+
+    public function testUserCanGetClientStats(): void
+    {
+        $user   = User::factory()->create();
+        $client = Client::factory()->create(['user_id' => $user->id]);
+
+        Activity::factory()->create(['client_id' => $client->id, 'user_id' => $user->id, 'status' => 'done']);
+        Activity::factory()->create(['client_id' => $client->id, 'user_id' => $user->id, 'status' => 'done']);
+        Activity::factory()->create(['client_id' => $client->id, 'user_id' => $user->id, 'status' => 'pending']);
+
+        $response = $this->actingAs($user, 'api')->getJson("/api/clients/{$client->id}/stats");
+
+        $response->assertStatus(200)->assertJsonStructure(['data' => ['total', 'completed', 'pending', 'last_activity']]);
+
+        $this->assertEquals(3, $response->json('data.total'));
+        $this->assertEquals(2, $response->json('data.completed'));
+        $this->assertEquals(1, $response->json('data.pending'));
+    }
+
+    public function testUserCannotGetStatsOfOtherUsersClient(): void
+    {
+        $user        = User::factory()->create();
+        $otherClient = Client::factory()->create();
+
+        $response = $this->actingAs($user, 'api')->getJson("/api/clients/{$otherClient->id}/stats");
+
+        $response->assertStatus(403);
+    }
+
+    public function testStatsReturnZeroWhenNoActivities(): void
+    {
+        $user   = User::factory()->create();
+        $client = Client::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user, 'api')->getJson("/api/clients/{$client->id}/stats");
+
+        $response->assertStatus(200);
+        $this->assertEquals(0, $response->json('data.total'));
+        $this->assertNull($response->json('data.last_activity'));
     }
 }

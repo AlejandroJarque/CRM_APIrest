@@ -1105,6 +1105,38 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /clients/{id}/stats:
+    get:
+      summary: Get client stats
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Client stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total:         { type: integer, example: 10 }
+                      completed:     { type: integer, example: 7 }
+                      pending:       { type: integer, example: 3 }
+                      last_activity: { type: string, format: date, nullable: true, example: "2026-03-15" }
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+
   /clients/{clientId}/contacts:
     get:
       summary: List contacts

@@ -31,6 +31,7 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/users/{user}', [UserController::class, 'show']);
 
     // Clients
+    Route::get('/clients/{client}/stats', [ClientController::class, 'stats']);
     Route::apiResource('clients', ClientController::class);
 
     // Activities
