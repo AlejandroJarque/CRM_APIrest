@@ -216,3 +216,107 @@
   display: flex;
   flex-direction: column;
 }
+
+
+.bell-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bell-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.bell-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.bell-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+.bell-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-bright);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.bell-dropdown-header {
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+
+.bell-empty {
+  padding: 16px 14px;
+  font-size: 13px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.bell-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+  border-bottom: 1px solid var(--border);
+}
+
+.bell-item:last-child {
+  border-bottom: none;
+}
+
+.bell-item:hover {
+  background: var(--bg-hover);
+}
+
+.bell-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-1);
+}
+
+.bell-item-meta {
+  font-size: 11px;
+  color: var(--text-3);
+  text-transform: capitalize;
+}
