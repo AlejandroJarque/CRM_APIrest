@@ -55,3 +55,8 @@ export async function exportClients() {
   link.remove()
   window.URL.revokeObjectURL(url)
 }
+
+export async function getPipeline() {
+  const response = await apiClient.get('/clients/pipeline')
+  return response.data
+}
