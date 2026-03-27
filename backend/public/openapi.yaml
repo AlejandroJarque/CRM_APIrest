@@ -1741,6 +1741,69 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /notes:
+    get:
+      summary: List all notes
+      tags: [Notes]
+      description: Returns all notes for the authenticated user. Admins see all notes.
+      responses:
+        "200":
+          description: Notes list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteCollection"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create standalone note
+      tags: [Notes]
+      description: >
+        Creates a note optionally associated to a resource.
+        If notable_type and notable_id are provided, the note is linked to that resource.
+        If omitted, the note is created without association.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title:        { type: string, example: "Idea importante" }
+                body:         { type: string, example: "Recordar llamar antes del viernes" }
+                notable_type: { type: string, enum: [clients, contacts, activities], nullable: true, example: clients }
+                notable_id:   { type: integer, nullable: true, example: 1 }
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
   /{notableType}/{notableId}/notes:
     get:
       summary: List notes

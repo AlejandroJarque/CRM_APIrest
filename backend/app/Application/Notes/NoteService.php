@@ -33,4 +33,22 @@ class NoteService
     {
         $note->delete();
     }
+
+    public function listAll(User $user): Collection
+    {
+        return $user->isAdmin()
+            ? Note::orderBy('created_at', 'desc')->get()
+            : Note::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+    }
+
+    public function createStandalone(User $user, array $data, ?Model $notable = null): Note
+    {
+        return Note::create([
+            'user_id'      => $user->id,
+            'title'        => $data['title'],
+            'body'         => $data['body'],
+            'notable_type' => $notable ? get_class($notable) : null,
+            'notable_id'   => $notable ? $notable->id : null,
+        ]);
+    }
 }

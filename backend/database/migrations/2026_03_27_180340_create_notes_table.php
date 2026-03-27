@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('body');
-            $table->morphs('notable');
+            $table->nullableMorphs('notable');
             $table->timestamps();
         });
     }

@@ -16,10 +16,42 @@ class NoteController extends Controller
     public function __construct(private NoteService $service)
     {}
 
+    public function indexGlobal(Request $request): JsonResponse
+    {
+        $this->authorize('viewAny', Note::class);
+
+        $notes = $this->service->listAll($request->user());
+
+        return response()->json(['data' => $notes]);
+    }
+
+    public function storeGlobal(Request $request): JsonResponse
+    {
+        $this->authorize('create', Note::class);
+
+        $request->validate([
+            'title'        => 'required|string|max:255',
+            'body'         => 'required|string',
+            'notable_type' => 'nullable|in:clients,contacts,activities',
+            'notable_id'   => 'nullable|integer',
+        ]);
+
+        $notable = null;
+
+        if ($request->filled('notable_type') && $request->filled('notable_id')) {
+            $notable = $this->resolveNotable($request->notable_type, $request->notable_id);
+            $this->authorize('view', $notable);
+        }
+
+        $note = $this->service->createStandalone($request->user(), $request->only(['title', 'body']), $notable);
+
+        return response()->json(['data' => $note], 201);
+    }
+
     public function index(Request $request, string $notableType, int $notableId): JsonResponse
     {
         $notable = $this->resolveNotable($notableType, $notableId);
-        $this->authorizeNotable($request, $notable);
+        $this->authorize('view', $notable);
 
         $notes = $this->service->listFor($notable);
 
@@ -34,7 +66,7 @@ class NoteController extends Controller
         ]);
 
         $notable = $this->resolveNotable($notableType, $notableId);
-        $this->authorizeNotable($request, $notable);
+        $this->authorize('view', $notable);
 
         $note = $this->service->create($request->user(), $notable, $request->only(['title', 'body']));
 
@@ -49,8 +81,8 @@ class NoteController extends Controller
         ]);
 
         $notable = $this->resolveNotable($notableType, $notableId);
-        $this->authorizeNotable($request, $notable);
-        $this->authorizeNote($request, $note, $notable);
+        $this->authorize('view', $notable);
+        $this->authorizeNote($note, $notable);
 
         $note = $this->service->update($note, $request->only(['title', 'body']));
 
@@ -60,8 +92,8 @@ class NoteController extends Controller
     public function destroy(Request $request, string $notableType, int $notableId, Note $note): JsonResponse
     {
         $notable = $this->resolveNotable($notableType, $notableId);
-        $this->authorizeNotable($request, $notable);
-        $this->authorizeNote($request, $note, $notable);
+        $this->authorize('view', $notable);
+        $this->authorizeNote($note, $notable);
 
         $this->service->delete($note);
 
@@ -78,26 +110,10 @@ class NoteController extends Controller
         };
     }
 
-    private function authorizeNotable(Request $request, Client|Contact|Activity $notable): void
+    private function authorizeNote(Note $note, Client|Contact|Activity $notable): void
     {
-        $user = $request->user();
-
-        if ($user->isAdmin()) return;
-
-        $ownerId = match(true) {
-            $notable instanceof Client   => $notable->user_id,
-            $notable instanceof Activity => $notable->user_id,
-            $notable instanceof Contact  => $notable->client->user_id,
-        };
-
-        if ($user->id !== $ownerId) abort(403);
-    }
-
-    private function authorizeNote(Request $request, Note $note, Client|Contact|Activity $notable): void
-    {
-        $belongsToNotable = $note->notable_type === get_class($notable)
-            && $note->notable_id === $notable->id;
-
-        if (!$belongsToNotable) abort(404);
+        if ($note->notable_type !== get_class($notable) || $note->notable_id !== $notable->id) {
+            abort(404);
+        }
     }
 }

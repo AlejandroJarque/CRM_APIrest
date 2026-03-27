@@ -52,6 +52,10 @@ Route::middleware('auth:api')->group(function() {
     Route::patch('/{notableType}/{notableId}/notes/{note}', [NoteController::class, 'update']);
     Route::delete('/{notableType}/{notableId}/notes/{note}', [NoteController::class, 'destroy']);
 
+    // Notes global
+    Route::get('/notes', [NoteController::class, 'indexGlobal']);
+    Route::post('/notes', [NoteController::class, 'storeGlobal']);
+
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
 
