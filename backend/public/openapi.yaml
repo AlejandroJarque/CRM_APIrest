@@ -1105,6 +1105,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /clients/export:
+    get:
+      summary: Export clients as CSV
+      tags: [Clients]
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Not authenticated
+
   /clients/{id}/stats:
     get:
       summary: Get client stats
@@ -1336,6 +1350,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /contacts/export:
+    get:
+      summary: Export contacts as CSV
+      tags: [Contacts]
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Not authenticated
+
   /activities:
     get:
       summary: List activities
@@ -1507,6 +1535,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /activities/export:
+    get:
+      summary: Export activities as CSV
+      tags: [Activities]
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Not authenticated
 
   /dashboard:
     get:

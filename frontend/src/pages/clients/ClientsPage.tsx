@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getClients, deleteClient } from '../../api/clients'
+import { getClients, deleteClient, exportClients } from '../../api/clients'
 import { useNavigate } from 'react-router-dom'
 import CreateClientModal from '../../components/CreateClientModal/CreateClientModal'
 import './ClientsPage.css'
@@ -116,6 +116,9 @@ function ClientsPage() {
           <option value="inactive">Inactive</option>
           <option value="lost">Lost</option>
         </select>
+        <button className="btn btn-ghost" onClick={exportClients}>
+          Export CSV
+        </button>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           New client
         </button>

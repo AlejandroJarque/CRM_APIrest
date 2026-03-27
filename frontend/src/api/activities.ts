@@ -39,3 +39,17 @@ export async function deleteActivity(id: number) {
   const response = await apiClient.delete(`/activities/${id}`)
   return response.data
 }
+
+export async function exportActivities() {
+  const response = await apiClient.get('/activities/export', {
+    responseType: 'blob',
+  })
+  const url = window.URL.createObjectURL(new Blob([response.data]))
+  const link = document.createElement('a')
+  link.href = url
+  link.setAttribute('download', 'activities.csv')
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.URL.revokeObjectURL(url)
+}
