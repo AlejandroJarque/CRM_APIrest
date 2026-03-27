@@ -89,11 +89,34 @@ class NoteController extends Controller
         return response()->json(['data' => $note]);
     }
 
+    public function updateGlobal(Request $request, Note $note): JsonResponse
+    {
+        $this->authorize('update', $note);
+
+        $request->validate([
+            'title' => 'sometimes|string|max:255',
+            'body'  => 'sometimes|string',
+        ]);
+
+        $note = $this->service->update($note, $request->only(['title', 'body']));
+
+        return response()->json(['data' => $note]);
+    }
+
     public function destroy(Request $request, string $notableType, int $notableId, Note $note): JsonResponse
     {
         $notable = $this->resolveNotable($notableType, $notableId);
         $this->authorize('view', $notable);
         $this->authorizeNote($note, $notable);
+
+        $this->service->delete($note);
+
+        return response()->json(null, 204);
+    }
+
+    public function destroyGlobal(Request $request, Note $note): JsonResponse
+    {
+        $this->authorize('delete', $note);
 
         $this->service->delete($note);
 

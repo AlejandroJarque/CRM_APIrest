@@ -1778,6 +1778,82 @@ paths:
                 body:         { type: string, example: "Recordar llamar antes del viernes" }
                 notable_type: { type: string, enum: [clients, contacts, activities], nullable: true, example: clients }
                 notable_id:   { type: integer, nullable: true, example: 1 }
+    patch:
+      summary: Update standalone note
+      tags: [Notes]
+      parameters:
+        - name: note
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteUpdateRequest"
+      responses:
+        "200":
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+    delete:
+      summary: Delete standalone note
+      tags: [Notes]
+      parameters:
+        - name: note
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "204":
+          description: Note deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
       responses:
         "201":
           description: Note created
