@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\UserController;
+use App\Http\Controllers\Api\V1\NoteController;
 use App\Http\Controllers\Api\V1\SearchController;
 
 // Auth (public)
@@ -44,6 +45,18 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/contacts/export', [ContactController::class, 'export']);
     Route::get('/contacts', [ContactController::class, 'indexGlobal']);
     Route::apiResource('clients.contacts', ContactController::class);
+
+    // Notes
+    Route::get('/{notableType}/{notableId}/notes', [NoteController::class, 'index']);
+    Route::post('/{notableType}/{notableId}/notes', [NoteController::class, 'store']);
+    Route::patch('/{notableType}/{notableId}/notes/{note}', [NoteController::class, 'update']);
+    Route::delete('/{notableType}/{notableId}/notes/{note}', [NoteController::class, 'destroy']);
+
+    // Notes global
+    Route::get('/notes', [NoteController::class, 'indexGlobal']);
+    Route::post('/notes', [NoteController::class, 'storeGlobal']);
+    Route::patch('/notes/{note}', [NoteController::class, 'updateGlobal']);
+    Route::delete('/notes/{note}', [NoteController::class, 'destroyGlobal']);
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);

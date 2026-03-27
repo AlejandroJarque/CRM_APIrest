@@ -26,6 +26,7 @@ class Client extends Model
         'email',
         'phone',
         'address',
+        'status',
     ];
 
     public function user()
@@ -41,5 +42,10 @@ class Client extends Model
     public function contacts()
     {
         return $this->hasMany(Contact::class);
+    }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
     }
 }

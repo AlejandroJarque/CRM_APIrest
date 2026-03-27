@@ -21,4 +21,9 @@ class Contact extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
+    }
 }

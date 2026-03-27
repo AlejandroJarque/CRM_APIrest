@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getClient, getClientStats } from '../../api/clients'
+import ResourceNotes from '../../components/ResourceNotes/ResourceNotes'
 import './ClientDetailPage.css'
 
 interface Client {
@@ -100,6 +101,8 @@ function ClientDetailPage() {
             </div>
           </div>
         )}
+
+        <ResourceNotes notableType="clients" notableId={client.id} />
 
         <div className="detail-actions">
           <button

@@ -70,4 +70,9 @@ class Activity extends Model
     {
         return $this->status === self::STATUS_DONE;
     }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
+    }
 }

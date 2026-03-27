@@ -6,10 +6,12 @@ use App\Models\Activity;
 use App\Models\Client;
 use App\Models\User;
 use App\Models\Contact;
+use App\Models\Note;
 use App\Policies\ActivityPolicy;
 use App\Policies\ClientPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\ContactPolicy;
+use App\Policies\NotePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -19,6 +21,7 @@ class AuthServiceProvider extends ServiceProvider
         Activity::class => ActivityPolicy::class,
         User::class => UserPolicy::class,
         Contact::class => ContactPolicy::class,
+        Note::class => NotePolicy::class,
     ];
 
     public function boot(): void

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getActivity } from '../../api/activities'
+import ResourceNotes from '../../components/ResourceNotes/ResourceNotes'
 import '../clients/ClientDetailPage.css'
 import './ActivitiesPage.css'
 
@@ -98,6 +99,8 @@ function ActivityDetailPage() {
             )}
           </div>
         </div>
+
+        <ResourceNotes notableType="activities" notableId={activity.id} />
       </div>
     </div>
   )
