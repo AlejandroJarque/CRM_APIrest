@@ -259,4 +259,54 @@ class ActivityTest extends TestCase
         $response->assertStatus(200);
         $this->assertCount(2, $response->json('data'));
     }
+
+    public function testUpcomingReturnsActivitiesInNext3Days(): void
+    {
+        $user   = User::factory()->create();
+        $client = Client::factory()->create(['user_id' => $user->id]);
+
+        Activity::factory()->create([
+            'client_id' => $client->id,
+            'user_id'   => $user->id,
+            'status'    => 'pending',
+            'date'      => now()->addDay()->toDateString(),
+        ]);
+
+        Activity::factory()->create([
+            'client_id' => $client->id,
+            'user_id'   => $user->id,
+            'status'    => 'done',
+            'date'      => now()->addDay()->toDateString(),
+        ]);
+
+        Activity::factory()->create([
+            'client_id' => $client->id,
+            'user_id'   => $user->id,
+            'status'    => 'pending',
+            'date'      => now()->addDays(10)->toDateString(),
+        ]);
+
+        $response = $this->actingAs($user, 'api')->getJson('/api/activities/upcoming');
+
+        $response->assertStatus(200);
+        $this->assertCount(1, $response->json('data'));
+    }
+
+    public function testUpcomingDoesNotReturnOtherUsersActivities(): void
+    {
+        $user        = User::factory()->create();
+        $otherClient = Client::factory()->create();
+
+        Activity::factory()->create([
+            'client_id' => $otherClient->id,
+            'user_id'   => $otherClient->user_id,
+            'status'    => 'pending',
+            'date'      => now()->addDay()->toDateString(),
+        ]);
+
+        $response = $this->actingAs($user, 'api')->getJson('/api/activities/upcoming');
+
+        $response->assertStatus(200);
+        $this->assertCount(0, $response->json('data'));
+    }
 }

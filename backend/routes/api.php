@@ -37,6 +37,7 @@ Route::middleware('auth:api')->group(function() {
 
     // Activities
     Route::get('/activities/export', [ActivityController::class, 'export']);
+    Route::get('/activities/upcoming', [ActivityController::class, 'upcoming']);
     Route::apiResource('activities', ActivityController::class);
 
     // Contacts

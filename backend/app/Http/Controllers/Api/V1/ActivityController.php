@@ -80,4 +80,11 @@ class ActivityController extends Controller
     {
         return $this->service->export($request->user());
     }
+
+    public function upcoming(Request $request): AnonymousResourceCollection
+    {
+        $activities = $this->service->upcoming($request->user());
+
+        return \App\Http\Resources\V1\ActivityResource::collection($activities);
+    }
 }

@@ -100,4 +100,17 @@ class ActivityService
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function upcoming(User $user): \Illuminate\Database\Eloquent\Collection
+    {
+        $query = $user->isAdmin()
+            ? Activity::query()
+            : Activity::where('user_id', $user->id);
+
+        return $query
+            ->where('status', '!=', Activity::STATUS_DONE)
+            ->whereBetween('date', [now()->toDateString(), now()->addDays(3)->toDateString()])
+            ->orderBy('date', 'asc')
+            ->get();
+    }
 }
