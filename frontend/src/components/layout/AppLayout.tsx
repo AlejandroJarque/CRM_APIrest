@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
+import { getUpcomingActivities } from '../../api/activities'
 import GlobalSearch from '../GlobalSearch/GlobalSearch'
 import './AppLayout.css'
 
@@ -8,6 +10,13 @@ interface NavItem {
   label: string
   path: string
   icon: React.ReactNode
+}
+
+interface UpcomingActivity {
+  id: number
+  title: string
+  type: string
+  date: string
 }
 
 const GENERAL_NAV: NavItem[] = [
@@ -36,6 +45,24 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
   const location = useLocation()
   const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
+
+  const [upcoming, setUpcoming] = useState<UpcomingActivity[]>([])
+  const [showBell, setShowBell] = useState(false)
+  const bellRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    getUpcomingActivities().then((response) => setUpcoming(response.data))
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setShowBell(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   function isActive(path: string) {
     return location.pathname === path || location.pathname.startsWith(path + '/')
@@ -140,6 +167,36 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
         <header className="topbar">
           <span className="topbar-title">{title}</span>
           <GlobalSearch />
+
+          <div className="bell-wrapper" ref={bellRef}>
+            <button className="bell-btn" onClick={() => setShowBell(v => !v)}>
+              <IconBell />
+              {upcoming.length > 0 && (
+                <span className="bell-badge">{upcoming.length}</span>
+              )}
+            </button>
+
+            {showBell && (
+              <div className="bell-dropdown">
+                <div className="bell-dropdown-header">Upcoming activities</div>
+                {upcoming.length === 0 ? (
+                  <div className="bell-empty">No upcoming activities</div>
+                ) : (
+                  upcoming.map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="bell-item"
+                      onClick={() => { navigate(`/activities/${activity.id}`); setShowBell(false) }}
+                    >
+                      <span className="bell-item-title">{activity.title}</span>
+                      <span className="bell-item-meta">{activity.type} · {activity.date}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+
           {actions && <div className="topbar-actions">{actions}</div>}
         </header>
 
@@ -233,6 +290,15 @@ function IconLogout() {
       <path d="M5 2H2.5A1.5 1.5 0 001 3.5v7A1.5 1.5 0 002.5 12H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       <path d="M9 10l3-3-3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M12 7H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconBell() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 1.5a5 5 0 00-5 5v2.5L1.5 11h13L13 9V6.5a5 5 0 00-5-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M6.5 13a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   )
 }

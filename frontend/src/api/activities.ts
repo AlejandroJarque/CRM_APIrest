@@ -53,3 +53,8 @@ export async function exportActivities() {
   link.remove()
   window.URL.revokeObjectURL(url)
 }
+
+export async function getUpcomingActivities() {
+  const response = await apiClient.get('/activities/upcoming')
+  return response.data
+}
