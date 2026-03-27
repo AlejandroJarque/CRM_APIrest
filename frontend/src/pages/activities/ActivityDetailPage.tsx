@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getActivity } from '../../api/activities'
+import ResourceNotes from '../../components/ResourceNotes/ResourceNotes'
 import '../clients/ClientDetailPage.css'
 import './ActivitiesPage.css'
 
@@ -9,6 +10,7 @@ interface Activity {
   client_id: number
   title: string
   description: string
+  type: string
   status: string
   date: string
   completed_at: string | null
@@ -24,6 +26,14 @@ const STATUS_CLASS: Record<string, string> = {
   pending:     'badge badge--pending',
   in_progress: 'badge badge--progress',
   done:   'badge badge--done',
+}
+
+const TYPE_LABEL: Record<string, string> = {
+  call:     'Call',
+  email:    'Email',
+  meeting:  'Meeting',
+  demo:     'Demo',
+  proposal: 'Proposal',
 }
 
 function ActivityDetailPage() {
@@ -70,6 +80,10 @@ function ActivityDetailPage() {
           <h2 className="detail-section-title">General info</h2>
           <div className="detail-fields">
             <div className="detail-field">
+              <span className="detail-label">Type</span>
+              <span className="detail-value">{TYPE_LABEL[activity.type] ?? activity.type}</span>
+            </div>
+            <div className="detail-field">
               <span className="detail-label">Description</span>
               <span className="detail-value">{activity.description ?? '—'}</span>
             </div>
@@ -85,6 +99,8 @@ function ActivityDetailPage() {
             )}
           </div>
         </div>
+
+        <ResourceNotes notableType="activities" notableId={activity.id} />
       </div>
     </div>
   )

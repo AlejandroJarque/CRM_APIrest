@@ -11,6 +11,7 @@ use App\Models\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityController extends Controller
 {
@@ -73,5 +74,17 @@ class ActivityController extends Controller
         $this->service->delete($activity);
 
         return response()->json(null, 204);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        return $this->service->export($request->user());
+    }
+
+    public function upcoming(Request $request): AnonymousResourceCollection
+    {
+        $activities = $this->service->upcoming($request->user());
+
+        return \App\Http\Resources\V1\ActivityResource::collection($activities);
     }
 }

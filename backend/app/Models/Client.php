@@ -9,12 +9,24 @@ class Client extends Model
 {
     use HasFactory;
 
+    public const STATUS_LEAD     = 'lead';
+    public const STATUS_ACTIVE   = 'active';
+    public const STATUS_INACTIVE = 'inactive';
+    public const STATUS_LOST     = 'lost';
+    public const STATUSES = [
+        self::STATUS_LEAD,
+        self::STATUS_ACTIVE,
+        self::STATUS_INACTIVE,
+        self::STATUS_LOST,
+    ];
+
     protected $fillable = [
         'user_id',
         'name',
         'email',
         'phone',
         'address',
+        'status',
     ];
 
     public function user()
@@ -30,5 +42,10 @@ class Client extends Model
     public function contacts()
     {
         return $this->hasMany(Contact::class);
+    }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
     }
 }

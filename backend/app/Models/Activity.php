@@ -18,11 +18,25 @@ class Activity extends Model
     self::STATUS_DONE,
     ];
 
+    public const TYPE_CALL     = 'call';
+    public const TYPE_EMAIL    = 'email';
+    public const TYPE_MEETING  = 'meeting';
+    public const TYPE_DEMO     = 'demo';
+    public const TYPE_PROPOSAL = 'proposal';
+    public const TYPES = [
+        self::TYPE_CALL,
+        self::TYPE_EMAIL,
+        self::TYPE_MEETING,
+        self::TYPE_DEMO,
+        self::TYPE_PROPOSAL,
+    ];
+
     protected $fillable = [
         'client_id',
         'contact_id',
         'user_id',
         'title',
+        'type',
         'status',
         'date',
         'description',
@@ -55,5 +69,10 @@ class Activity extends Model
     public function isDone(): bool
     {
         return $this->status === self::STATUS_DONE;
+    }
+
+    public function notes()
+    {
+        return $this->morphMany(Note::class, 'notable');
     }
 }

@@ -10,6 +10,7 @@ function ClientEditPage() {
   const [address, setAddress] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [status, setStatus] = useState('lead')
 
   const navigate = useNavigate()
   const { id } = useParams()
@@ -22,6 +23,7 @@ function ClientEditPage() {
         setEmail(client.email)
         setPhone(client.phone ?? '')
         setAddress(client.address ?? '')
+        setStatus(client.status ?? 'lead')
       })
       .catch(() => setError('Error loading client'))
       .finally(() => setLoading(false))
@@ -33,7 +35,7 @@ function ClientEditPage() {
     setLoading(true)
 
     try {
-      await updateClient(Number(id), { name, email, phone, address })
+      await updateClient(Number(id), { name, email, phone, address, status })
       navigate('/clients')
     } catch {
       setError('Error updating client')
@@ -106,6 +108,20 @@ function ClientEditPage() {
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Street, city..."
             />
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Status</label>
+            <select
+              className="input"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              <option value="lead">Lead</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+              <option value="lost">Lost</option>
+            </select>
           </div>
 
           <div className="form-actions">

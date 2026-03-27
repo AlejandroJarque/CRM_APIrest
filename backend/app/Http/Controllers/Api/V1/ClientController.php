@@ -11,6 +11,7 @@ use App\Models\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ClientController extends Controller
 {
@@ -49,6 +50,28 @@ class ClientController extends Controller
         ]);
     }
 
+    public function stats(Request $request, Client $client): JsonResponse
+    {
+        $this->authorize('view', $client);
+
+        $total     = $client->activities()->count();
+        $completed = $client->activities()->where('status', 'done')->count();
+        $pending   = $client->activities()->where('status', 'pending')->count();
+        $last      = $client->activities()
+                        ->whereNotNull('completed_at')
+                        ->orderBy('completed_at', 'desc')
+                        ->value('completed_at');
+
+        return response()->json([
+            'data' => [
+                'total'         => $total,
+                'completed'     => $completed,
+                'pending'       => $pending,
+                'last_activity' => $last ? $last->toDateString() : null,
+            ],
+        ]);
+    }
+
     public function update(UpdateClientRequest $request, Client $client): JsonResponse
     {
         $this->authorize('update', $client);
@@ -67,5 +90,17 @@ class ClientController extends Controller
         $this->service->delete($client);
 
         return response()->json(null, 204);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        return $this->service->export($request->user());
+    }
+
+    public function pipeline(Request $request): JsonResponse
+    {
+        $data = $this->service->pipeline($request->user());
+
+        return response()->json(['data' => $data]);
     }
 }

@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react'
 import { getClients } from '../../api/clients'
 import { createActivity } from '../../api/activities'
+import { getContacts } from '../../api/contacts'
 import '../CreateContactModal/CreateContactModal.css'
 
 interface Client {
+  id: number
+  name: string
+}
+
+interface Contact {
   id: number
   name: string
 }
@@ -18,6 +24,9 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
   const [clientId, setClientId] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [type, setType] = useState('call')
+  const [contacts, setContacts] = useState<Contact[]>([])
+  const [contactId, setContactId] = useState('')
   const [status, setStatus] = useState('pending')
   const [date, setDate] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,6 +44,17 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
+  useEffect(() => {
+    if (!clientId) {
+      setContacts([])
+      setContactId('')
+      return
+    }
+    getContacts(Number(clientId))
+      .then((response) => setContacts(response.data))
+      .catch(() => setContacts([]))
+  }, [clientId])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!clientId) {
@@ -47,9 +67,11 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
       await createActivity({
         title,
         description,
+        type,
         status,
         date,
         client_id: Number(clientId),
+        contact_id: contactId ? Number(contactId) : undefined,
       })
       onCreated()
     } catch {
@@ -95,6 +117,20 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
 
           <div className="form-row">
             <div className="input-group">
+              <label className="input-label">Type</label>
+              <select
+                className="select"
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+              >
+                <option value="call">Call</option>
+                <option value="email">Email</option>
+                <option value="meeting">Meeting</option>
+                <option value="demo">Demo</option>
+                <option value="proposal">Proposal</option>
+              </select>
+            </div>
+            <div className="input-group">
               <label className="input-label">Status</label>
               <select
                 className="select"
@@ -106,16 +142,17 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
                 <option value="done">Completed</option>
               </select>
             </div>
-            <div className="input-group">
-              <label className="input-label">Date</label>
-              <input
-                className="input"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Date</label>
+            <input
+              className="input"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+            />
           </div>
 
           <div className="input-group">
@@ -134,6 +171,24 @@ export default function CreateActivityModal({ onClose, onCreated }: Props) {
               ))}
             </select>
           </div>
+
+          {contacts.length > 0 && (
+            <div className="input-group">
+              <label className="input-label">Contact <span className="input-hint">(optional)</span></label>
+              <select
+                className="select"
+                value={contactId}
+                onChange={(e) => setContactId(e.target.value)}
+              >
+                <option value="">No specific contact</option>
+                {contacts.map((contact) => (
+                  <option key={contact.id} value={contact.id}>
+                    {contact.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="modal-actions">
             <button type="button" className="btn btn-ghost" onClick={onClose}>

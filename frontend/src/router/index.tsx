@@ -19,6 +19,8 @@ import AdminRoute from './AdminRoute'
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage'
 import WelcomePage from '../pages/welcome/WelcomePage'
 import AllContactsPage from '../pages/contacts/AllContactsPage'
+import NotesPage from '../pages/notes/NotesPage'
+import PipelinePage from '../pages/pipeline/PipelinePage'
 
 function Router() {
   return (
@@ -83,6 +85,18 @@ function Router() {
         <Route path="/contacts" element={
           <ProtectedRoute title="Contacts">
             <AllContactsPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/notes" element={
+          <ProtectedRoute title="Notes">
+            <NotesPage />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/pipeline" element={
+          <ProtectedRoute title="Pipeline">
+            <PipelinePage />
           </ProtectedRoute>
         } />
 

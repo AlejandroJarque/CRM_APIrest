@@ -12,6 +12,7 @@ use App\Models\Client;
 use App\Models\Contact;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ContactController extends Controller
 {
@@ -67,5 +68,10 @@ class ContactController extends Controller
         $this->service->delete($contact);
 
         return response()->json(null, 204);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        return $this->service->export($request->user());
     }
 }

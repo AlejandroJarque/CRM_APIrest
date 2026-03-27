@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ContactService
 {
@@ -53,5 +54,43 @@ class ContactService
         $contact->delete();
 
         ContactDeleted::dispatch($user, $contact);
+    }
+
+    public function export(User $user): StreamedResponse
+    {
+        $contacts = $user->isAdmin()
+            ? Contact::with('client')->get()
+            : Contact::with('client')
+                ->whereHas('client', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })
+                ->get();
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="contacts.csv"',
+        ];
+
+        $callback = function () use ($contacts) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['ID', 'Name', 'Email', 'Phone', 'Position', 'Client', 'Created At']);
+
+            foreach ($contacts as $contact) {
+                fputcsv($handle, [
+                    $contact->id,
+                    $contact->name,
+                    $contact->email,
+                    $contact->phone,
+                    $contact->position,
+                    $contact->client->name ?? '—',
+                    $contact->created_at->toDateString(),
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
+import { getUpcomingActivities } from '../../api/activities'
 import GlobalSearch from '../GlobalSearch/GlobalSearch'
 import './AppLayout.css'
 
@@ -10,11 +12,20 @@ interface NavItem {
   icon: React.ReactNode
 }
 
+interface UpcomingActivity {
+  id: number
+  title: string
+  type: string
+  date: string
+}
+
 const GENERAL_NAV: NavItem[] = [
   { label: 'Dashboard',  path: '/dashboard',  icon: <IconDashboard /> },
   { label: 'Clients',    path: '/clients',    icon: <IconClients /> },
   { label: 'Activities', path: '/activities', icon: <IconActivities /> },
   { label: 'Contacts',   path: '/contacts',   icon: <IconContacts /> },
+  { label: 'Notes',      path: '/notes',      icon: <IconNotes /> },
+  { label: 'Pipeline',   path: '/pipeline',   icon: <IconPipeline /> },
 ]
 
 const ACCOUNT_NAV: NavItem[] = [
@@ -36,6 +47,24 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
   const location = useLocation()
   const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
+
+  const [upcoming, setUpcoming] = useState<UpcomingActivity[]>([])
+  const [showBell, setShowBell] = useState(false)
+  const bellRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    getUpcomingActivities().then((response) => setUpcoming(response.data))
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setShowBell(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   function isActive(path: string) {
     return location.pathname === path || location.pathname.startsWith(path + '/')
@@ -140,6 +169,36 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
         <header className="topbar">
           <span className="topbar-title">{title}</span>
           <GlobalSearch />
+
+          <div className="bell-wrapper" ref={bellRef}>
+            <button className="bell-btn" onClick={() => setShowBell(v => !v)}>
+              <IconBell />
+              {upcoming.length > 0 && (
+                <span className="bell-badge">{upcoming.length}</span>
+              )}
+            </button>
+
+            {showBell && (
+              <div className="bell-dropdown">
+                <div className="bell-dropdown-header">Upcoming activities</div>
+                {upcoming.length === 0 ? (
+                  <div className="bell-empty">No upcoming activities</div>
+                ) : (
+                  upcoming.map((activity) => (
+                    <div
+                      key={activity.id}
+                      className="bell-item"
+                      onClick={() => { navigate(`/activities/${activity.id}`); setShowBell(false) }}
+                    >
+                      <span className="bell-item-title">{activity.title}</span>
+                      <span className="bell-item-meta">{activity.type} · {activity.date}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+
           {actions && <div className="topbar-actions">{actions}</div>}
         </header>
 
@@ -233,6 +292,34 @@ function IconLogout() {
       <path d="M5 2H2.5A1.5 1.5 0 001 3.5v7A1.5 1.5 0 002.5 12H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
       <path d="M9 10l3-3-3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M12 7H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconBell() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 1.5a5 5 0 00-5 5v2.5L1.5 11h13L13 9V6.5a5 5 0 00-5-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M6.5 13a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconNotes() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 2.5A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5v9A1.5 1.5 0 0110.5 13h-7A1.5 1.5 0 012 11.5v-9z" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconPipeline() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x="1" y="1" width="3" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+      <rect x="5.5" y="3" width="3" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+      <rect x="10" y="5" width="3" height="8" rx="1" stroke="currentColor" strokeWidth="1.5"/>
     </svg>
   )
 }

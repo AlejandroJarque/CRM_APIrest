@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getClient } from '../../api/clients'
+import { getClient, getClientStats } from '../../api/clients'
+import ResourceNotes from '../../components/ResourceNotes/ResourceNotes'
 import './ClientDetailPage.css'
 
 interface Client {
@@ -9,22 +10,36 @@ interface Client {
   email: string
   phone: string
   address: string
+  status: string
+}
+
+interface Stats {
+  total: number
+  completed: number
+  pending: number
+  last_activity: string | null
 }
 
 function ClientDetailPage() {
   const [client, setClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const [stats, setStats] = useState<Stats | null>(null)
   const navigate = useNavigate()
   const { id } = useParams()
 
   useEffect(() => {
-    getClient(Number(id))
-      .then((response) => setClient(response.data))
-      .catch(() => setError('Error loading client'))
-      .finally(() => setLoading(false))
-  }, [id])
+  Promise.all([
+    getClient(Number(id)),
+    getClientStats(Number(id)),
+  ])
+    .then(([clientRes, statsRes]) => {
+      setClient(clientRes.data)
+      setStats(statsRes.data)
+    })
+    .catch(() => setError('Error loading client'))
+    .finally(() => setLoading(false))
+}, [id])
 
   if (loading) return <div className="loading">Loading...</div>
   if (error) return <div className="error-msg">{error}</div>
@@ -62,6 +77,32 @@ function ClientDetailPage() {
             </div>
           </div>
         </div>
+
+        {stats && (
+          <div className="detail-card">
+            <h2 className="detail-section-title">Activity stats</h2>
+            <div className="detail-fields">
+              <div className="detail-field">
+                <span className="detail-label">Total activities</span>
+                <span className="detail-value">{stats.total}</span>
+              </div>
+              <div className="detail-field">
+                <span className="detail-label">Completed</span>
+                <span className="detail-value">{stats.completed}</span>
+              </div>
+              <div className="detail-field">
+                <span className="detail-label">Pending</span>
+                <span className="detail-value">{stats.pending}</span>
+              </div>
+              <div className="detail-field">
+                <span className="detail-label">Last activity</span>
+                <span className="detail-value">{stats.last_activity ?? '—'}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ResourceNotes notableType="clients" notableId={client.id} />
 
         <div className="detail-actions">
           <button

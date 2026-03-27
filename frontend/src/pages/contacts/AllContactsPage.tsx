@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getAllContacts, deleteContact } from '../../api/contacts'
+import { getAllContacts, deleteContact, exportContacts } from '../../api/contacts'
 import CreateContactModal from '../../components/CreateContactModal/CreateContactModal'
 import './AllContactsPage.css'
 
@@ -116,6 +116,9 @@ function AllContactsPage() {
           <h1 className="page-title">Contacts</h1>
           <span className="count-pill">{meta?.total ?? contacts.length}</span>
         </div>
+        <button className="btn btn-ghost" onClick={exportContacts}>
+          Export CSV
+        </button>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           New contact
         </button>

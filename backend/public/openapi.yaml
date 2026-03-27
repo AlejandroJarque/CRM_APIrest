@@ -46,6 +46,8 @@ tags:
     description: Dashboard summary endpoint.
   - name: Search
     description: Global search endpoint.
+  - name: Notes
+    description: Notes management endpoints.
 
 components:
   securitySchemes:
@@ -545,6 +547,7 @@ components:
             phone: { type: string, example: "666111222" }
             address: { type: string, example: "Calle Mayor 1, Valencia" }
             user_id: { type: integer, example: 1 }
+            status: { type: string, enum: [lead, active, inactive, lost], example: lead }
 
     ClientCollection:
       type: object
@@ -569,6 +572,7 @@ components:
         email: { type: string, format: email, example: "empresa@test.com" }
         phone: { type: string, example: "666111222" }
         address: { type: string, example: "Calle Mayor 1, Valencia" }
+        status: { type: string, enum: [lead, active, inactive, lost], example: lead }
 
     ClientUpdateRequest:
       type: object
@@ -577,6 +581,7 @@ components:
         email: { type: string, format: email, example: "empresa@test.com" }
         phone: { type: string, example: "666111222" }
         address: { type: string, example: "Calle Mayor 1, Valencia" }
+        status: { type: string, enum: [lead, active, inactive, lost], example: lead }
 
     ContactResource:
       type: object
@@ -631,6 +636,7 @@ components:
           properties:
             id: { type: integer, example: 1 }
             title: { type: string, example: "Llamada de seguimiento" }
+            type: { type: string, enum: [call, email, meeting, demo, proposal], example: call }
             status: { type: string, enum: [pending, in_progress, done], example: pending }
             date: { type: string, format: date, example: "2026-03-15" }
             description: { type: string, example: "Llamar al cliente para seguimiento" }
@@ -648,6 +654,7 @@ components:
             properties:
               id: { type: integer, example: 1 }
               title: { type: string, example: "Llamada de seguimiento" }
+              type: { type: string, enum: [call, email, meeting, demo, proposal], example: call }
               status: { type: string, enum: [pending, in_progress, done], example: pending }
               date: { type: string, format: date, example: "2026-03-15" }
               description: { type: string, example: "Llamar al cliente para seguimiento" }
@@ -660,6 +667,7 @@ components:
       required: [title, status, date, client_id]
       properties:
         title: { type: string, example: "Llamada de seguimiento" }
+        type: { type: string, enum: [call, email, meeting, demo, proposal], example: call }
         status: { type: string, enum: [pending, in_progress, done], example: pending }
         date: { type: string, format: date, example: "2026-03-15" }
         description: { type: string, example: "Llamar al cliente para seguimiento" }
@@ -672,6 +680,51 @@ components:
         status: { type: string, enum: [pending, in_progress, done], example: done }
         date: { type: string, format: date, example: "2026-03-15" }
         description: { type: string, example: "Descripción actualizada" }
+
+    NoteResource:
+        type: object
+        properties:
+          data:
+            type: object
+            properties:
+              id:            { type: integer, example: 1 }
+              title:         { type: string, example: "Reunión inicial" }
+              body:          { type: string, example: "El cliente quiere empezar en abril" }
+              user_id:       { type: integer, example: 1 }
+              notable_type:  { type: string, example: "App\\Models\\Client" }
+              notable_id:    { type: integer, example: 1 }
+              created_at:    { type: string, format: date-time }
+              updated_at:    { type: string, format: date-time }
+
+    NoteCollection:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:            { type: integer, example: 1 }
+              title:         { type: string, example: "Reunión inicial" }
+              body:          { type: string, example: "El cliente quiere empezar en abril" }
+              user_id:       { type: integer, example: 1 }
+              notable_type:  { type: string, example: "App\\Models\\Client" }
+              notable_id:    { type: integer, example: 1 }
+              created_at:    { type: string, format: date-time }
+              updated_at:    { type: string, format: date-time }
+
+    NoteCreateRequest:
+      type: object
+      required: [title, body]
+      properties:
+        title: { type: string, example: "Reunión inicial" }
+        body:  { type: string, example: "El cliente quiere empezar en abril" }
+
+    NoteUpdateRequest:
+      type: object
+      properties:
+        title: { type: string, example: "Reunión inicial actualizada" }
+        body:  { type: string, example: "Contenido actualizado" }
 
 security:
   - BearerAuth: []
@@ -1099,6 +1152,114 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /clients/export:
+    get:
+      summary: Export clients as CSV
+      tags: [Clients]
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Not authenticated
+
+  /clients/{id}/stats:
+    get:
+      summary: Get client stats
+      tags: [Clients]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Client stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total:         { type: integer, example: 10 }
+                      completed:     { type: integer, example: 7 }
+                      pending:       { type: integer, example: 3 }
+                      last_activity: { type: string, format: date, nullable: true, example: "2026-03-15" }
+        "401":
+          description: Not authenticated
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+
+  /clients/pipeline:
+    get:
+      summary: Get clients grouped by status for pipeline view
+      tags: [Clients]
+      description: >
+        Returns all clients accessible to the authenticated user grouped by status.
+        No pagination. Only returns id, name, email and status fields.
+        Intended for kanban/pipeline views.
+      responses:
+        "200":
+          description: Clients grouped by status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      lead:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 1 }
+                            name:   { type: string, example: "Acme Corp" }
+                            email:  { type: string, example: "acme@example.com" }
+                            status: { type: string, example: "lead" }
+                      active:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 2 }
+                            name:   { type: string, example: "Beta SL" }
+                            email:  { type: string, example: "beta@example.com" }
+                            status: { type: string, example: "active" }
+                      inactive:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 3 }
+                            name:   { type: string, example: "Gamma SA" }
+                            email:  { type: string, example: "gamma@example.com" }
+                            status: { type: string, example: "inactive" }
+                      lost:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 4 }
+                            name:   { type: string, example: "Delta Inc" }
+                            email:  { type: string, example: "delta@example.com" }
+                            status: { type: string, example: "lost" }
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /clients/{clientId}/contacts:
     get:
       summary: List contacts
@@ -1298,6 +1459,20 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /contacts/export:
+    get:
+      summary: Export contacts as CSV
+      tags: [Contacts]
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Not authenticated
+
   /activities:
     get:
       summary: List activities
@@ -1470,6 +1645,35 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /activities/export:
+    get:
+      summary: Export activities as CSV
+      tags: [Activities]
+      responses:
+        "200":
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+        "401":
+          description: Not authenticated
+
+  /activities/upcoming:
+    get:
+      summary: Get upcoming activities
+      tags: [Activities]
+      description: Returns activities with date in the next 3 days and status != done
+      responses:
+        "200":
+          description: List of upcoming activities
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityCollection"
+        "401":
+          description: Not authenticated
+
   /dashboard:
     get:
       summary: Aggregated dashboard
@@ -1594,6 +1798,332 @@ paths:
                         status: { type: string, example: "pending" }
         "401":
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /notes:
+    get:
+      summary: List all notes
+      tags: [Notes]
+      description: Returns all notes for the authenticated user. Admins see all notes.
+      responses:
+        "200":
+          description: Notes list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteCollection"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create standalone note
+      tags: [Notes]
+      description: >
+        Creates a note optionally associated to a resource.
+        If notable_type and notable_id are provided, the note is linked to that resource.
+        If omitted, the note is created without association.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, body]
+              properties:
+                title:        { type: string, example: "Idea importante" }
+                body:         { type: string, example: "Recordar llamar antes del viernes" }
+                notable_type: { type: string, enum: [clients, contacts, activities], nullable: true, example: clients }
+                notable_id:   { type: integer, nullable: true, example: 1 }
+    patch:
+      summary: Update standalone note
+      tags: [Notes]
+      parameters:
+        - name: note
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteUpdateRequest"
+      responses:
+        "200":
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+    delete:
+      summary: Delete standalone note
+      tags: [Notes]
+      parameters:
+        - name: note
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "204":
+          description: Note deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /{notableType}/{notableId}/notes:
+    get:
+      summary: List notes
+      tags: [Notes]
+      description: >
+        Returns all notes for a given resource.
+        notableType can be: clients, contacts, activities.
+      parameters:
+        - name: notableType
+          in: path
+          required: true
+          schema: { type: string, enum: [clients, contacts, activities] }
+          example: clients
+        - name: notableId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "200":
+          description: Notes list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteCollection"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      summary: Create note
+      tags: [Notes]
+      parameters:
+        - name: notableType
+          in: path
+          required: true
+          schema: { type: string, enum: [clients, contacts, activities] }
+          example: clients
+        - name: notableId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteCreateRequest"
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+
+  /{notableType}/{notableId}/notes/{note}:
+    patch:
+      summary: Update note
+      tags: [Notes]
+      parameters:
+        - name: notableType
+          in: path
+          required: true
+          schema: { type: string, enum: [clients, contacts, activities] }
+          example: clients
+        - name: notableId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+        - name: note
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteUpdateRequest"
+      responses:
+        "200":
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
+    delete:
+      summary: Delete note
+      tags: [Notes]
+      parameters:
+        - name: notableType
+          in: path
+          required: true
+          schema: { type: string, enum: [clients, contacts, activities] }
+          example: clients
+        - name: notableId
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+        - name: note
+          in: path
+          required: true
+          schema: { type: integer }
+          example: 1
+      responses:
+        "204":
+          description: Note deleted
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Not found
           content:
             application/json:
               schema:
