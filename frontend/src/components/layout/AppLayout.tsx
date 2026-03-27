@@ -25,6 +25,7 @@ const GENERAL_NAV: NavItem[] = [
   { label: 'Activities', path: '/activities', icon: <IconActivities /> },
   { label: 'Contacts',   path: '/contacts',   icon: <IconContacts /> },
   { label: 'Notes',      path: '/notes',      icon: <IconNotes /> },
+  { label: 'Pipeline',   path: '/pipeline',   icon: <IconPipeline /> },
 ]
 
 const ACCOUNT_NAV: NavItem[] = [
@@ -309,6 +310,16 @@ function IconNotes() {
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
       <path d="M2 2.5A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5v9A1.5 1.5 0 0110.5 13h-7A1.5 1.5 0 012 11.5v-9z" stroke="currentColor" strokeWidth="1.5"/>
       <path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconPipeline() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <rect x="1" y="1" width="3" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+      <rect x="5.5" y="3" width="3" height="10" rx="1" stroke="currentColor" strokeWidth="1.5"/>
+      <rect x="10" y="5" width="3" height="8" rx="1" stroke="currentColor" strokeWidth="1.5"/>
     </svg>
   )
 }
