@@ -31,13 +31,16 @@ Route::middleware('auth:api')->group(function() {
     Route::get('/users/{user}', [UserController::class, 'show']);
 
     // Clients
+    Route::get('/clients/export', [ClientController::class, 'export']);
     Route::get('/clients/{client}/stats', [ClientController::class, 'stats']);
     Route::apiResource('clients', ClientController::class);
 
     // Activities
+    Route::get('/activities/export', [ActivityController::class, 'export']);
     Route::apiResource('activities', ActivityController::class);
 
     // Contacts
+    Route::get('/contacts/export', [ContactController::class, 'export']);
     Route::get('/contacts', [ContactController::class, 'indexGlobal']);
     Route::apiResource('clients.contacts', ContactController::class);
 

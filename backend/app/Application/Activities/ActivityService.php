@@ -9,6 +9,7 @@ use App\Models\Activity;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ActivityService
 {
@@ -63,5 +64,40 @@ class ActivityService
         $activity->delete();
 
         ActivityDeleted::dispatch($user, $activity);
+    }
+
+    public function export(User $user): StreamedResponse
+    {
+        $activities = $user->isAdmin()
+            ? Activity::with('client')->get()
+            : Activity::with('client')->where('user_id', $user->id)->get();
+
+        $headers = [
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="activities.csv"',
+        ];
+
+        $callback = function () use ($activities) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['ID', 'Title', 'Type', 'Status', 'Date', 'Client', 'Completed At', 'Created At']);
+
+            foreach ($activities as $activity) {
+                fputcsv($handle, [
+                    $activity->id,
+                    $activity->title,
+                    $activity->type,
+                    $activity->status,
+                    $activity->date->toDateString(),
+                    $activity->client->name ?? '—',
+                    $activity->completed_at?->toDateString(),
+                    $activity->created_at->toDateString(),
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }
