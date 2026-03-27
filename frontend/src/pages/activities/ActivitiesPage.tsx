@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getActivities, deleteActivity } from '../../api/activities'
+import { getActivities, deleteActivity, exportActivities } from '../../api/activities'
 import CreateActivityModal from '../../components/CreateActivityModal/CreateActivityModal'
 import './ActivitiesPage.css'
 import '../clients/ClientsPage.css'
@@ -96,6 +96,9 @@ function ActivitiesPage() {
           <h1 className="page-title">Activities</h1>
           <span className="count-pill">{meta?.total ?? activities.length}</span>
         </div>
+        <button className="btn btn-ghost" onClick={exportActivities}>
+          Export CSV
+        </button>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>
           New activity
         </button>
