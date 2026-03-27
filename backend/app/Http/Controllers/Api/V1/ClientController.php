@@ -96,4 +96,11 @@ class ClientController extends Controller
     {
         return $this->service->export($request->user());
     }
+
+    public function pipeline(Request $request): JsonResponse
+    {
+        $data = $this->service->pipeline($request->user());
+
+        return response()->json(['data' => $data]);
+    }
 }

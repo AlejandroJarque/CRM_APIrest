@@ -1198,6 +1198,68 @@ paths:
         "404":
           description: Not found
 
+  /clients/pipeline:
+    get:
+      summary: Get clients grouped by status for pipeline view
+      tags: [Clients]
+      description: >
+        Returns all clients accessible to the authenticated user grouped by status.
+        No pagination. Only returns id, name, email and status fields.
+        Intended for kanban/pipeline views.
+      responses:
+        "200":
+          description: Clients grouped by status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      lead:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 1 }
+                            name:   { type: string, example: "Acme Corp" }
+                            email:  { type: string, example: "acme@example.com" }
+                            status: { type: string, example: "lead" }
+                      active:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 2 }
+                            name:   { type: string, example: "Beta SL" }
+                            email:  { type: string, example: "beta@example.com" }
+                            status: { type: string, example: "active" }
+                      inactive:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 3 }
+                            name:   { type: string, example: "Gamma SA" }
+                            email:  { type: string, example: "gamma@example.com" }
+                            status: { type: string, example: "inactive" }
+                      lost:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:     { type: integer, example: 4 }
+                            name:   { type: string, example: "Delta Inc" }
+                            email:  { type: string, example: "delta@example.com" }
+                            status: { type: string, example: "lost" }
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /clients/{clientId}/contacts:
     get:
       summary: List contacts

@@ -92,4 +92,20 @@ class ClientService
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function pipeline(User $user): array
+    {
+        $query = $user->isAdmin()
+            ? Client::query()
+            : Client::where('user_id', $user->id);
+
+        $clients = $query->select(['id', 'name', 'email', 'status'])->get();
+
+        return [
+            'lead'     => $clients->where('status', 'lead')->values(),
+            'active'   => $clients->where('status', 'active')->values(),
+            'inactive' => $clients->where('status', 'inactive')->values(),
+            'lost'     => $clients->where('status', 'lost')->values(),
+        ];
+    }
 }
