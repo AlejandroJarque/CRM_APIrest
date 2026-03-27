@@ -24,6 +24,7 @@ const GENERAL_NAV: NavItem[] = [
   { label: 'Clients',    path: '/clients',    icon: <IconClients /> },
   { label: 'Activities', path: '/activities', icon: <IconActivities /> },
   { label: 'Contacts',   path: '/contacts',   icon: <IconContacts /> },
+  { label: 'Notes',      path: '/notes',      icon: <IconNotes /> },
 ]
 
 const ACCOUNT_NAV: NavItem[] = [
@@ -299,6 +300,15 @@ function IconBell() {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M8 1.5a5 5 0 00-5 5v2.5L1.5 11h13L13 9V6.5a5 5 0 00-5-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M6.5 13a1.5 1.5 0 003 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  )
+}
+
+function IconNotes() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 2.5A1.5 1.5 0 013.5 1h7A1.5 1.5 0 0112 2.5v9A1.5 1.5 0 0110.5 13h-7A1.5 1.5 0 012 11.5v-9z" stroke="currentColor" strokeWidth="1.5"/>
+      <path d="M4.5 4.5h5M4.5 7h5M4.5 9.5h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   )
 }

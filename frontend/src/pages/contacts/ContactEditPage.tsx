@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getContact, updateContact } from '../../api/contacts'
+import ResourceNotes from '../../components/ResourceNotes/ResourceNotes'
 import '../clients/ClientCreatePage.css'
 
 function ContactEditPage() {
@@ -122,6 +123,8 @@ function ContactEditPage() {
             </button>
           </div>
         </form>
+
+        <ResourceNotes notableType="contacts" notableId={Number(id)} />
       </div>
     </div>
   )
