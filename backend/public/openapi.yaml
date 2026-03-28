@@ -1902,6 +1902,31 @@ paths:
                 body:         { type: string, example: "Recordar llamar antes del viernes" }
                 notable_type: { type: string, enum: [clients, contacts, activities], nullable: true, example: clients }
                 notable_id:   { type: integer, nullable: true, example: 1 }
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NoteResource"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationError"
     patch:
       summary: Update standalone note
       tags: [Notes]
@@ -1978,31 +2003,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-      responses:
-        "201":
-          description: Note created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NoteResource"
-        "401":
-          description: Not authenticated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        "422":
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ValidationError"
 
   /{notableType}/{notableId}/notes:
     get:
