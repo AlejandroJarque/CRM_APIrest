@@ -31,8 +31,22 @@ export default function CreateClientModal({ onClose, onCreated }: Props) {
     try {
       await createClient({ name, email, phone, address, status })
       onCreated()
-    } catch {
-      setError('Error creating client')
+    } catch (err: unknown) {
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'message' in err.response.data
+      ) {
+        setError(err.response.data.message as string)
+      } else {
+        setError('Error creating client')
+      }
     } finally {
       setLoading(false)
     }

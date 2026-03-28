@@ -54,3 +54,8 @@ export async function exportContacts() {
   window.URL.revokeObjectURL(url)
 }
 
+export async function getAllContactsUnpaginated() {
+  const response = await apiClient.get('/contacts/all')
+  return response.data
+}
+
