@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getNotes, createNote, updateNote, deleteNote } from '../../api/notes'
+import { getClients } from '../../api/clients'
+import { getAllContactsUnpaginated } from '../../api/contacts'
+import { getAllActivitiesUnpaginated } from '../../api/activities'
 import './NotesPage.css'
 
 interface Note {
@@ -9,6 +12,11 @@ interface Note {
   notable_type: string | null
   notable_id: number | null
   created_at: string
+}
+
+interface SelectOption {
+  id: number
+  label: string
 }
 
 const NOTABLE_LABEL: Record<string, string> = {
@@ -33,22 +41,47 @@ function formatDate(dateString: string) {
 }
 
 function NotesPage() {
-  const [notes, setNotes]           = useState<Note[]>([])
-  const [loading, setLoading]       = useState(true)
-  const [error, setError]           = useState<string | null>(null)
-  const [panelOpen, setPanelOpen]   = useState(false)
-  const [editingNote, setEditingNote] = useState<Note | null>(null)
+  const [notes, setNotes]               = useState<Note[]>([])
+  const [loading, setLoading]           = useState(true)
+  const [error, setError]               = useState<string | null>(null)
+  const [panelOpen, setPanelOpen]       = useState(false)
+  const [editingNote, setEditingNote]   = useState<Note | null>(null)
 
-  const [title, setTitle]           = useState('')
-  const [body, setBody]             = useState('')
-  const [notableType, setNotableType] = useState('')
-  const [notableId, setNotableId]   = useState('')
-  const [saving, setSaving]         = useState(false)
-  const [formError, setFormError]   = useState<string | null>(null)
+  const [title, setTitle]               = useState('')
+  const [body, setBody]                 = useState('')
+  const [notableType, setNotableType]   = useState('')
+  const [notableId, setNotableId]       = useState<number | ''>('')
+  const [saving, setSaving]             = useState(false)
+  const [formError, setFormError]       = useState<string | null>(null)
+
+  const [resourceOptions, setResourceOptions] = useState<SelectOption[]>([])
+  const [loadingOptions, setLoadingOptions]   = useState(false)
 
   useEffect(() => {
     loadNotes()
   }, [])
+
+  useEffect(() => {
+    if (!notableType) {
+      setResourceOptions([])
+      setNotableId('')
+      return
+    }
+
+    setLoadingOptions(true)
+    setNotableId('')
+
+    const loaders: Record<string, () => Promise<SelectOption[]>> = {
+      clients:    () => getClients().then((res) => res.data.map((c: { id: number; name: string }) => ({ id: c.id, label: c.name }))),
+      contacts:   () => getAllContactsUnpaginated().then((res) => res.data.map((c: { id: number; name: string }) => ({ id: c.id, label: c.name }))),
+      activities: () => getAllActivitiesUnpaginated().then((res) => res.data.map((a: { id: number; title: string; date: string }) => ({ id: a.id, label: `${a.title} · ${a.date}` }))),
+    }
+
+    loaders[notableType]()
+      .then(setResourceOptions)
+      .catch(() => setResourceOptions([]))
+      .finally(() => setLoadingOptions(false))
+  }, [notableType])
 
   function loadNotes() {
     setLoading(true)
@@ -64,6 +97,7 @@ function NotesPage() {
     setBody('')
     setNotableType('')
     setNotableId('')
+    setResourceOptions([])
     setFormError(null)
     setPanelOpen(true)
   }
@@ -74,6 +108,7 @@ function NotesPage() {
     setBody(note.body)
     setNotableType('')
     setNotableId('')
+    setResourceOptions([])
     setFormError(null)
     setPanelOpen(true)
   }
@@ -233,7 +268,7 @@ function NotesPage() {
                   <select
                     className="select"
                     value={notableType}
-                    onChange={(e) => { setNotableType(e.target.value); setNotableId('') }}
+                    onChange={(e) => setNotableType(e.target.value)}
                   >
                     {NOTABLE_TYPE_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -245,15 +280,25 @@ function NotesPage() {
 
                 {notableType && (
                   <div className="input-group">
-                    <label className="input-label">Resource ID</label>
-                    <input
-                      className="input"
-                      type="number"
-                      value={notableId}
-                      onChange={(e) => setNotableId(e.target.value)}
-                      placeholder="Enter ID"
-                      min={1}
-                    />
+                    <label className="input-label">
+                      {NOTABLE_TYPE_OPTIONS.find(o => o.value === notableType)?.label}
+                    </label>
+                    {loadingOptions ? (
+                      <div className="input-hint">Loading...</div>
+                    ) : (
+                      <select
+                        className="select"
+                        value={notableId}
+                        onChange={(e) => setNotableId(Number(e.target.value))}
+                      >
+                        <option value="">Select one...</option>
+                        {resourceOptions.map((opt) => (
+                          <option key={opt.id} value={opt.id}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 )}
               </>
