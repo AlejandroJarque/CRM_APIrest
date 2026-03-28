@@ -320,3 +320,7 @@
   color: var(--text-3);
   text-transform: capitalize;
 }
+
+.bell-item--seen {
+  opacity: 0.4;
+}

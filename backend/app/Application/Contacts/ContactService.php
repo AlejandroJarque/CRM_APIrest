@@ -93,4 +93,13 @@ class ContactService
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function listAll(User $user): \Illuminate\Database\Eloquent\Collection
+    {
+        $query = $user->isAdmin()
+            ? \App\Models\Contact::query()
+            : \App\Models\Contact::whereHas('client', fn($q) => $q->where('user_id', $user->id));
+
+        return $query->select(['id', 'name', 'client_id'])->orderBy('name')->get();
+    }
 }

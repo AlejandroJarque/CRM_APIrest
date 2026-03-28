@@ -38,11 +38,13 @@ Route::middleware('auth:api')->group(function() {
     Route::apiResource('clients', ClientController::class);
 
     // Activities
+    Route::get('/activities/all', [ActivityController::class, 'indexAll']);
     Route::get('/activities/export', [ActivityController::class, 'export']);
     Route::get('/activities/upcoming', [ActivityController::class, 'upcoming']);
     Route::apiResource('activities', ActivityController::class);
 
     // Contacts
+    Route::get('/contacts/all', [ContactController::class, 'indexAll']);
     Route::get('/contacts/export', [ContactController::class, 'export']);
     Route::get('/contacts', [ContactController::class, 'indexGlobal']);
     Route::apiResource('clients.contacts', ContactController::class);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getClient, updateClient } from '../../api/clients'
+import ResourceNotes from '../../components/ResourceNotes/ResourceNotes'
 import './ClientCreatePage.css'
 
 function ClientEditPage() {
@@ -141,6 +142,10 @@ function ClientEditPage() {
             </button>
           </div>
         </form>
+
+        <div style={{ width: '100%', maxWidth: '480px' }}>
+          <ResourceNotes notableType="clients" notableId={Number(id)} />
+        </div>
       </div>
     </div>
   )

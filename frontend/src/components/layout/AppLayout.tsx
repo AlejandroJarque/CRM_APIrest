@@ -22,10 +22,10 @@ interface UpcomingActivity {
 const GENERAL_NAV: NavItem[] = [
   { label: 'Dashboard',  path: '/dashboard',  icon: <IconDashboard /> },
   { label: 'Clients',    path: '/clients',    icon: <IconClients /> },
+  { label: 'Pipeline',   path: '/pipeline',   icon: <IconPipeline /> },
   { label: 'Activities', path: '/activities', icon: <IconActivities /> },
   { label: 'Contacts',   path: '/contacts',   icon: <IconContacts /> },
   { label: 'Notes',      path: '/notes',      icon: <IconNotes /> },
-  { label: 'Pipeline',   path: '/pipeline',   icon: <IconPipeline /> },
 ]
 
 const ACCOUNT_NAV: NavItem[] = [
@@ -50,6 +50,10 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
 
   const [upcoming, setUpcoming] = useState<UpcomingActivity[]>([])
   const [showBell, setShowBell] = useState(false)
+  const [seenIds, setSeenIds] = useState<number[]>(() => {
+    const stored = localStorage.getItem('seen_activity_ids')
+    return stored ? JSON.parse(stored) : []
+  })
   const bellRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -65,6 +69,16 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  function handleSeenActivity(id: number) {
+    const updated = [...seenIds, id]
+    setSeenIds(updated)
+    localStorage.setItem('seen_activity_ids', JSON.stringify(updated))
+    navigate(`/activities/${id}`)
+    setShowBell(false)
+  }
+
+  const unseenUpcoming = upcoming.filter((a) => !seenIds.includes(a.id))
 
   function isActive(path: string) {
     return location.pathname === path || location.pathname.startsWith(path + '/')
@@ -173,8 +187,8 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
           <div className="bell-wrapper" ref={bellRef}>
             <button className="bell-btn" onClick={() => setShowBell(v => !v)}>
               <IconBell />
-              {upcoming.length > 0 && (
-                <span className="bell-badge">{upcoming.length}</span>
+              {unseenUpcoming.length > 0 && (
+                <span className="bell-badge">{unseenUpcoming.length}</span>
               )}
             </button>
 
@@ -187,8 +201,8 @@ export default function AppLayout({ children, title, actions }: AppLayoutProps) 
                   upcoming.map((activity) => (
                     <div
                       key={activity.id}
-                      className="bell-item"
-                      onClick={() => { navigate(`/activities/${activity.id}`); setShowBell(false) }}
+                      className={`bell-item ${seenIds.includes(activity.id) ? 'bell-item--seen' : ''}`}
+                      onClick={() => handleSeenActivity(activity.id)}
                     >
                       <span className="bell-item-title">{activity.title}</span>
                       <span className="bell-item-meta">{activity.type} · {activity.date}</span>

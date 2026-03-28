@@ -74,4 +74,10 @@ class ContactController extends Controller
     {
         return $this->service->export($request->user());
     }
+
+    public function indexAll(Request $request): JsonResponse
+    {
+        $contacts = $this->service->listAll($request->user());
+        return response()->json(['data' => $contacts]);
+    }
 }

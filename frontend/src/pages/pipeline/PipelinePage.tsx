@@ -78,11 +78,6 @@ function PipelinePage() {
 
   return (
     <div className="page">
-      <div className="page-header">
-        <div className="page-title-group">
-          <h1 className="page-title">Pipeline</h1>
-        </div>
-      </div>
 
       <div className="pipeline-board">
         {COLUMNS.map((col) => (
