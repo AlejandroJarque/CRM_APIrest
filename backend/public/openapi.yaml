@@ -217,14 +217,13 @@ components:
             "details": null | { "fields": { "field": ["error"] } }
           }
 
-
           ## Rationale
           - Allows the frontend to handle errors deterministically.
 
           - Facilitates automated testing.
 
           - Improves observability and maintainability.
-    
+
     Clients:
       type: object
       description: |
@@ -682,19 +681,19 @@ components:
         description: { type: string, example: "Descripción actualizada" }
 
     NoteResource:
-        type: object
-        properties:
-          data:
-            type: object
-            properties:
-              id:            { type: integer, example: 1 }
-              title:         { type: string, example: "Reunión inicial" }
-              body:          { type: string, example: "El cliente quiere empezar en abril" }
-              user_id:       { type: integer, example: 1 }
-              notable_type:  { type: string, example: "App\\Models\\Client" }
-              notable_id:    { type: integer, example: 1 }
-              created_at:    { type: string, format: date-time }
-              updated_at:    { type: string, format: date-time }
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:           { type: integer, example: 1 }
+            title:        { type: string, example: "Reunión inicial" }
+            body:         { type: string, example: "El cliente quiere empezar en abril" }
+            user_id:      { type: integer, example: 1 }
+            notable_type: { type: string, example: "App\\Models\\Client" }
+            notable_id:   { type: integer, example: 1 }
+            created_at:   { type: string, format: date-time }
+            updated_at:   { type: string, format: date-time }
 
     NoteCollection:
       type: object
@@ -704,14 +703,14 @@ components:
           items:
             type: object
             properties:
-              id:            { type: integer, example: 1 }
-              title:         { type: string, example: "Reunión inicial" }
-              body:          { type: string, example: "El cliente quiere empezar en abril" }
-              user_id:       { type: integer, example: 1 }
-              notable_type:  { type: string, example: "App\\Models\\Client" }
-              notable_id:    { type: integer, example: 1 }
-              created_at:    { type: string, format: date-time }
-              updated_at:    { type: string, format: date-time }
+              id:           { type: integer, example: 1 }
+              title:        { type: string, example: "Reunión inicial" }
+              body:         { type: string, example: "El cliente quiere empezar en abril" }
+              user_id:      { type: integer, example: 1 }
+              notable_type: { type: string, example: "App\\Models\\Client" }
+              notable_id:   { type: integer, example: 1 }
+              created_at:   { type: string, format: date-time }
+              updated_at:   { type: string, format: date-time }
 
     NoteCreateRequest:
       type: object
@@ -1757,55 +1756,18 @@ paths:
                 properties:
                   clients_count:
                     type: integer
-                    description: Number of clients visible to the authenticated user
                     example: 5
                   activities_count:
                     type: integer
-                    description: Number of activities visible to the authenticated user
                     example: 12
                   pending_activities_alerts:
                     type: array
-                    description: List of pending activity alerts
                     items:
                       type: object
-                      required:
-                        - clients_count
-                        - activities_count
-                        - activities_completed_this_month
-                        - activities_pending
-                        - activity_chart
-                        - upcoming_activities
                       properties:
-                        clients_count:
-                          type: integer
-                          example: 5
-                        activities_count:
-                          type: integer
-                          example: 12
-                        activities_completed_this_month:
-                          type: integer
-                          example: 3
-                        activities_pending:
-                          type: integer
-                          example: 7
-                        activity_chart:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              date: { type: string, format: date, example: "2026-03-01" }
-                              count: { type: integer, example: 4 }
-                        upcoming_activities:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              id: { type: integer, example: 1 }
-                              title: { type: string, example: "Follow up call" }
-                              date: { type: string, format: date, example: "2026-03-20" }
-                              status: { type: string, example: "pending" }
+                        activity_id: { type: integer, example: 42 }
         "401":
-          description: Unauthorized - authentication token is missing or invalid
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1814,19 +1776,18 @@ paths:
   /search:
     get:
       summary: Global search
+      tags: [Search]
       description: >
         Searches across clients, contacts and activities using a query string.
         Results are grouped by resource type and limited to 5 per group.
-        Respects ownership rules — users see only their own records, admins see all.
+        Respects ownership rules.
         Returns empty arrays if the query parameter is missing or blank.
-      tags: [Search]
       parameters:
         - name: q
           in: query
           required: false
           schema: { type: string }
           example: "acme"
-          description: Search term. Matched using LIKE against name/title fields.
       responses:
         "200":
           description: Search results grouped by resource type
@@ -1840,23 +1801,23 @@ paths:
                     items:
                       type: object
                       properties:
-                        id: { type: integer, example: 1 }
+                        id:   { type: integer, example: 1 }
                         name: { type: string, example: "Acme Corp" }
                   contacts:
                     type: array
                     items:
                       type: object
                       properties:
-                        id: { type: integer, example: 1 }
-                        name: { type: string, example: "Jaki Riggs" }
+                        id:        { type: integer, example: 1 }
+                        name:      { type: string, example: "Jaki Riggs" }
                         client_id: { type: integer, example: 1 }
                   activities:
                     type: array
                     items:
                       type: object
                       properties:
-                        id: { type: integer, example: 1 }
-                        title: { type: string, example: "Follow up call" }
+                        id:     { type: integer, example: 1 }
+                        title:  { type: string, example: "Follow up call" }
                         status: { type: string, example: "pending" }
         "401":
           description: Unauthorized
@@ -1927,6 +1888,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ValidationError"
+
+  /notes/{note}:
     patch:
       summary: Update standalone note
       tags: [Notes]
@@ -2006,7 +1969,7 @@ paths:
 
   /{notableType}/{notableId}/notes:
     get:
-      summary: List notes
+      summary: List notes for resource
       tags: [Notes]
       description: >
         Returns all notes for a given resource.
@@ -2048,7 +2011,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
     post:
-      summary: Create note
+      summary: Create note for resource
       tags: [Notes]
       parameters:
         - name: notableType
@@ -2095,7 +2058,7 @@ paths:
 
   /{notableType}/{notableId}/notes/{note}:
     patch:
-      summary: Update note
+      summary: Update note for resource
       tags: [Notes]
       parameters:
         - name: notableType
@@ -2151,7 +2114,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ValidationError"
     delete:
-      summary: Delete note
+      summary: Delete note for resource
       tags: [Notes]
       parameters:
         - name: notableType
