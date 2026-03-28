@@ -153,3 +153,32 @@
   gap: 4px;
   flex-wrap: wrap;
 }
+
+.pipeline-col--over {
+  background: var(--bg-hover);
+  border-color: var(--border-bright);
+}
+
+.pipeline-card--dragging {
+  opacity: 0.4;
+}
+
+.pipeline-card--overlay {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  cursor: grabbing;
+  rotate: 2deg;
+}
+
+.pipeline-card-drag-handle {
+  color: var(--text-3);
+  cursor: grab;
+  padding: 2px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  transition: color var(--transition);
+}
+
+.pipeline-card-drag-handle:hover {
+  color: var(--text-2);
+}
