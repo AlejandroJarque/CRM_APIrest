@@ -2,7 +2,7 @@
 
 A fullstack CRM (Customer Relationship Management) application built with Laravel and React. Designed to help teams manage clients, contacts, activities, and track business relationships in a clean and efficient way.
 
-![Dashboard](screenshots/dashboard.png)
+![Welcome](screenshots/welcome.png)
 
 ## Live Demo
 
@@ -26,9 +26,9 @@ A fullstack CRM (Customer Relationship Management) application built with Larave
 ## Screenshots
 
 ![Clients](screenshots/clients.png)
-![Activities](screenshots/activities.png)
+![Pipeline](screenshots/pipeline.png)
 ![Profile](screenshots/profile.png)
-![Welcome](screenshots/welcome.png)
+![Dashboard](screenshots/dashboard.png)
 ![Dashboard](screenshots/dashboardwhite.png)
 
 ## Tech Stack
