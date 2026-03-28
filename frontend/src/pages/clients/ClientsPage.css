@@ -133,7 +133,7 @@ tbody td {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px 16px 24px;
+  padding: 16px 16px 20px;
 }
 
 .client-card-avatar {
@@ -174,7 +174,7 @@ tbody td {
 }
 
 .client-card-body {
-  padding: 0 16px 12px;
+  padding: 12px 16px 12px;
   display: flex;
   flex-direction: column;
   gap: 4px;
