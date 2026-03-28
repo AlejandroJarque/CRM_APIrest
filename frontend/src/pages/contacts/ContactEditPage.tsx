@@ -124,7 +124,9 @@ function ContactEditPage() {
           </div>
         </form>
 
-        <ResourceNotes notableType="contacts" notableId={Number(id)} />
+        <div style={{ width: '100%', maxWidth: '480px' }}>
+          <ResourceNotes notableType="contacts" notableId={Number(id)} />
+        </div>
       </div>
     </div>
   )

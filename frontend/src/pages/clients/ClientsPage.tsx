@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getClients, deleteClient, exportClients } from '../../api/clients'
 import { useNavigate } from 'react-router-dom'
 import CreateClientModal from '../../components/CreateClientModal/CreateClientModal'
+import StatusFilter from '../../components/StatusFilter/StatusFilter'
 import './ClientsPage.css'
 
 interface Client {
@@ -104,18 +105,17 @@ function ClientsPage() {
           <h1 className="page-title">Clients</h1>
           <span className="count-pill">{meta?.total ?? clients.length}</span>
         </div>
-        <select
-          className="select"
+        <StatusFilter
           value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-          style={{ width: 'auto' }}
-        >
-          <option value="">All statuses</option>
-          <option value="lead">Lead</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-          <option value="lost">Lost</option>
-        </select>
+          onChange={(val) => { setStatusFilter(val); setPage(1) }}
+          placeholder="All statuses"
+          options={[
+            { value: 'lead',     label: 'Lead' },
+            { value: 'active',   label: 'Active' },
+            { value: 'inactive', label: 'Inactive' },
+            { value: 'lost',     label: 'Lost' },
+          ]}
+        />
         <button className="btn btn-ghost" onClick={exportClients}>
           Export CSV
         </button>

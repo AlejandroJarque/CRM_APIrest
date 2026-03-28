@@ -113,4 +113,13 @@ class ActivityService
             ->orderBy('date', 'asc')
             ->get();
     }
+
+    public function listAll(User $user): \Illuminate\Database\Eloquent\Collection
+    {
+        $query = $user->isAdmin()
+            ? \App\Models\Activity::query()
+            : \App\Models\Activity::where('user_id', $user->id);
+
+        return $query->select(['id', 'title', 'date'])->orderBy('date', 'desc')->get();
+    }
 }

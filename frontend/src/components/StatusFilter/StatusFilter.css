@@ -1,0 +1,66 @@
+.status-filter {
+  position: relative;
+}
+
+.status-filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.status-filter-trigger:hover {
+  border-color: var(--border-bright);
+  color: var(--text-1);
+  background: var(--bg-hover);
+}
+
+.status-filter-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.status-filter-option {
+  display: flex;
+  align-items: center;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition);
+}
+
+.status-filter-option:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.status-filter-option.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+}

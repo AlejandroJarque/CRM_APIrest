@@ -1473,6 +1473,37 @@ paths:
         "401":
           description: Not authenticated
 
+  /contacts/all:
+    get:
+      summary: List all contacts without pagination
+      tags: [Contacts]
+      description: >
+        Returns all contacts accessible to the authenticated user without pagination.
+        Only returns id, name and client_id fields.
+        Intended for selectors and dropdowns.
+      responses:
+        "200":
+          description: Contacts list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:        { type: integer, example: 1 }
+                        name:      { type: string, example: "Juan García" }
+                        client_id: { type: integer, example: 1 }
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /activities:
     get:
       summary: List activities
@@ -1673,6 +1704,37 @@ paths:
                 $ref: "#/components/schemas/ActivityCollection"
         "401":
           description: Not authenticated
+
+  /activities/all:
+    get:
+      summary: List all activities without pagination
+      tags: [Activities]
+      description: >
+        Returns all activities accessible to the authenticated user without pagination.
+        Only returns id, title and date fields.
+        Intended for selectors and dropdowns.
+      responses:
+        "200":
+          description: Activities list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:    { type: integer, example: 1 }
+                        title: { type: string, example: "Llamada de seguimiento" }
+                        date:  { type: string, format: date, example: "2026-03-15" }
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /dashboard:
     get:

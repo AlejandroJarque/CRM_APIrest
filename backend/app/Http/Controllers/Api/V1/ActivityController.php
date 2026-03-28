@@ -87,4 +87,10 @@ class ActivityController extends Controller
 
         return \App\Http\Resources\V1\ActivityResource::collection($activities);
     }
+
+    public function indexAll(Request $request): JsonResponse
+    {
+        $activities = $this->service->listAll($request->user());
+        return response()->json(['data' => $activities]);
+    }
 }

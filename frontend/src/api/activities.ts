@@ -58,3 +58,8 @@ export async function getUpcomingActivities() {
   const response = await apiClient.get('/activities/upcoming')
   return response.data
 }
+
+export async function getAllActivitiesUnpaginated() {
+  const response = await apiClient.get('/activities/all')
+  return response.data
+}
